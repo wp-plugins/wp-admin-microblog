@@ -1,0 +1,45 @@
+@charset "utf-8";
+/* Help container */
+div#hilfe_anzeigen {
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background-color: rgb(243,243,243);
+	border:1px solid silver;
+	padding:5px;
+	margin:5px;
+	display:none;
+}
+/* Help headline */
+h3.teachpress_help {
+	color:#005A46;
+	margin-bottom:5px;
+}
+/* Help: Question */
+p.hilfe_headline {
+	font-weight:bold;
+}
+/* Help: Answer */
+p.hilfe_text {
+	padding-left:10px;
+}
+/* Help: close button */
+p.hilfe_close {
+	padding-left:15px;
+}
+/* Message for user */
+.return_message {
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background-color:#FFFFCC; 
+	border:1px solid silver; 
+	padding:5px;
+	margin:5px;
+	width:80%;
+}
+a.replies {color:#AAAAAA;}
+a.replies hover {color:#FF6600;}
+

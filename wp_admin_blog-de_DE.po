@@ -1,0 +1,217 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Admin Microblog v0.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2010-03-22 18:48+0100\n"
+"Last-Translator: Michael Winkler <michi.mtrv@googlemail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: wp-admin-microblog.php:41
+#@ wp_admin_blog
+msgid "Blog"
+msgstr "Blog"
+
+#: wp-admin-microblog.php:41
+#: wp-admin-microblog.php:283
+#@ wp_admin_blog
+msgid "Microblog"
+msgstr "Microblog"
+
+#: wp-admin-microblog.php:44
+#: wp-admin-microblog.php:206
+#@ wp_admin_blog
+msgid "WP Admin Microblog Settings"
+msgstr "WP Admin Microblog Einstellungen"
+
+#: wp-admin-microblog.php:66
+#: wp-admin-microblog.php:408
+#@ wp_admin_blog
+msgid "Tags (seperate with comma)"
+msgstr "Tags (durch Komma trennen)"
+
+#: wp-admin-microblog.php:169
+#@ wp_admin_blog
+msgid "New message in admin micoblog"
+msgstr "Neue Nachricht im Microblog"
+
+#: wp-admin-microblog.php:211
+#@ wp_admin_blog
+msgid "Access for"
+msgstr "Zugriff für"
+
+#: wp-admin-microblog.php:211
+#@ wp_admin_blog
+msgid "Select which userrole your users must have to use WP Admin Microblog."
+msgstr "Wähle aus, welche Nutzerrolle die Nutzer haben müssen, um WP Admin Microblog nutzen zu können."
+
+#: wp-admin-microblog.php:225
+#@ wp_admin_blog
+msgid "use &lt;Ctrl&gt; key to select multiple roles"
+msgstr "nutze &lt;Strg&gt; um mehrere Rollen auszuwählen"
+
+#: wp-admin-microblog.php:230
+#@ wp_admin_blog
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+#: wp-admin-microblog.php:283
+#: wp-admin-microblog.php:285
+#@ wp_admin_blog
+msgid "Help"
+msgstr "Hilfe"
+
+#: wp-admin-microblog.php:286
+#@ wp_admin_blog
+msgid "E-Mail Notification"
+msgstr "E-Mail Benachrichtigung"
+
+#: wp-admin-microblog.php:287
+#@ wp_admin_blog
+msgid "If you will send your message as an E-Mail to any user, so write @username (example: @admin)"
+msgstr "Wenn eine Nachricht auch als E-Mail zu einem Nutzer gesendet werden soll, dann schreibe @username (Beispiel: @admin)"
+
+#: wp-admin-microblog.php:288
+#@ wp_admin_blog
+msgid "close"
+msgstr "schließen"
+
+#: wp-admin-microblog.php:300
+#@ wp_admin_blog
+msgid "Delete the search from filter"
+msgstr "Lösche die Suche aus dem Suchfilter"
+
+#: wp-admin-microblog.php:300
+#: wp-admin-microblog.php:303
+#@ wp_admin_blog
+msgid "Search"
+msgstr "Suche"
+
+#: wp-admin-microblog.php:309
+#@ wp_admin_blog
+msgid "Search word"
+msgstr "Suchbegriff"
+
+#: wp-admin-microblog.php:310
+#@ wp_admin_blog
+msgid "Go"
+msgstr "Suche"
+
+#: wp-admin-microblog.php:355
+#@ wp_admin_blog
+msgid "Delete the tag from filter"
+msgstr "Lösche den Tag aus dem Suchfilter"
+
+#: wp-admin-microblog.php:370
+#@ wp_admin_blog
+msgid "User"
+msgstr "Nutzer"
+
+#: wp-admin-microblog.php:381
+#@ wp_admin_blog
+msgid "Delete user as filter"
+msgstr "Lösche den Nutzer aus dem Suchfilter"
+
+#: wp-admin-microblog.php:401
+#@ wp_admin_blog
+msgid "Your Message"
+msgstr "Neue Nachricht"
+
+#: wp-admin-microblog.php:409
+#@ wp_admin_blog
+msgid "Send"
+msgstr "Senden"
+
+#: wp-admin-microblog.php:423
+#@ wp_admin_blog
+msgid "Search Results"
+msgstr "Suchergebnisse"
+
+#: wp-admin-microblog.php:423
+#@ wp_admin_blog
+msgid "Show all"
+msgstr "Zeige alles"
+
+#: wp-admin-microblog.php:426
+#@ wp_admin_blog
+msgid "Messages"
+msgstr "Nachrichten"
+
+#: wp-admin-microblog.php:475
+#@ wp_admin_blog
+msgid "Sorry, no entries mached your criteria"
+msgstr "Leider gibt es keine Einträge, die den gewählten Kriterien entsprechen"
+
+#: wp-admin-microblog.php:483
+#@ wp_admin_blog
+msgid "previous page"
+msgstr "Vorherige Seite"
+
+#: wp-admin-microblog.php:491
+#: wp-admin-microblog.php:504
+#@ wp_admin_blog
+msgid "Page"
+msgstr "Seite"
+
+#: wp-admin-microblog.php:514
+#@ wp_admin_blog
+msgid "next page"
+msgstr "Nächste Seite"
+
+#: wp-admin-microblog.php:547
+#@ wp_admin_blog
+msgid "en"
+msgstr "de"
+
+#: wp-admin-microblog.php:559
+#@ wp_admin_blog
+msgid "Replies"
+msgstr "Antworten"
+
+#: wp-admin-microblog.php:562
+#@ wp_admin_blog
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: wp-admin-microblog.php:562
+#@ wp_admin_blog
+msgid "Click to delete this message"
+msgstr "Klicken um diese Nachricht zu löschen"
+
+#: wp-admin-microblog.php:562
+#@ wp_admin_blog
+msgid "Delete"
+msgstr "Löschen"
+
+#: wp-admin-microblog.php:564
+#@ wp_admin_blog
+msgid "Reply"
+msgstr "Antworten"
+
+#: wp-admin-microblog.php:358
+#@ wp_admin_blog
+msgid "Show related messages"
+msgstr "Zeige verwandte Nachrichten"
+
+#: wp-admin-microblog.php:319
+#@ wp_admin_blog
+msgid "Tags"
+msgstr "Tags"
+
+#: wp-admin-microblog.php:573
+#@ wp_admin_blog
+msgid "by"
+msgstr "von"
+
