@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.5.0
+Version: 0.5.1
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -334,29 +334,35 @@ function wp_admin_blog_page() {
 				$max = $tagcloud_temp['max'];
 				$min = $tagcloud_temp['min'];
 				$insgesamt = $tagcloud_temp['gesamt'];
-				// compose tags and their numbers
-				$sql = "SELECT tagPeak, name, tag_ID FROM ( SELECT COUNT(b.tag_ID) as tagPeak, t.name AS name,  t.tag_ID as tag_ID FROM " . $admin_blog_relations . " b LEFT JOIN " . $admin_blog_tags . " t ON b.tag_ID = t.tag_ID GROUP BY b.tag_ID ORDER BY tagPeak DESC LIMIT " . $limit . " ) AS temp WHERE tagPeak>=".$min." ORDER BY name";
-				$temp = $wpdb->get_results($sql, ARRAY_A);
-				// create a cloud
-				foreach ($temp as $tagcloud) {
-					// compute font size
-					// offset for min
-					if ($min == 1) {
-						$min = 0;
+				// if there are tags in database
+				if ($insgesamt != 0) {
+					// compose tags and their numbers
+					$sql = "SELECT tagPeak, name, tag_ID FROM ( SELECT COUNT(b.tag_ID) as tagPeak, t.name AS name,  t.tag_ID as tag_ID FROM " . $admin_blog_relations . " b LEFT JOIN " . $admin_blog_tags . " t ON b.tag_ID = t.tag_ID GROUP BY b.tag_ID ORDER BY tagPeak DESC LIMIT " . $limit . " ) AS temp WHERE tagPeak>=".$min." ORDER BY name";
+					$temp = $wpdb->get_results($sql, ARRAY_A);
+					// create a cloud
+					foreach ($temp as $tagcloud) {
+						// compute font size
+						// offset for min
+						if ($min == 1) {
+							$min = 0;
+						}
+						// Formula: max. font size*(current number - min number)/ (max number - min number)
+						$size = floor(($maxsize*($tagcloud['tagPeak']-$min)/($max-$min)));
+						// offset for font size
+						if ($size < $minsize) {
+							$size = $minsize ;
+						}
+						// active tag
+						if ($tagcloud['tag_ID'] == $tag){
+							echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '" title="' . __('Delete the tag from filter','wp_admin_blog') . '" style="color:#FF9900; text-decoration:underline;">' . $tagcloud['name'] . '</a></span> '; 
+						}
+						else{
+							echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tagcloud['tag_ID'] . '" title="' . __('Show related messages','wp_admin_blog') . '">' . $tagcloud['name'] . '</a></span> '; 
+						}
 					}
-					// Formula: max. font size*(current number - min number)/ (max number - min number)
-					$size = floor(($maxsize*($tagcloud['tagPeak']-$min)/($max-$min)));
-					// offset for font size
-					if ($size < $minsize) {
-						$size = $minsize ;
-					}
-					// active tag
-					if ($tagcloud['tag_ID'] == $tag){
-						echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '" title="' . __('Delete the tag from filter','wp_admin_blog') . '" style="color:#FF9900; text-decoration:underline;">' . $tagcloud['name'] . '</a></span> '; 
-					}
-					else{
-						echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tagcloud['tag_ID'] . '" title="' . __('Show related messages','wp_admin_blog') . '">' . $tagcloud['name'] . '</a></span> '; 
-					}
+				}
+				else {
+					_e('No tags available','wp_admin_blog');
 				}?>
              </div>     
             </td>
@@ -611,6 +617,14 @@ function wp_admin_blog_install () {
 	$admin_blog_posts = $wpdb->prefix . 'admin_blog_posts';
 	$admin_blog_tags = $wpdb->prefix . 'admin_blog_tags';
 	$admin_blog_relations = $wpdb->prefix . 'admin_blog_relations';
+	
+	// Add capabilities
+	global $wp_roles;
+	$wp_roles->WP_Roles();
+	$role = $wp_roles->get_role('administrator');
+	if ( !$role->has_cap('use_wp_admin_microblog') ) {
+		$wp_roles->add_cap('administrator', 'use_wp_admin_microblog');
+	}
 	
 	// charset & collate like WordPress
 	$charset_collate = '';
