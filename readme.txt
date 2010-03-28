@@ -3,13 +3,13 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.5.1
+Stable tag: 0.5.2
 
 WP Admin Microblog adds a seperate microblog in your WordPress backend.
 
 == Description ==
 
-WP Admin Microblog adds a seperate microblog in your WordPress backend. The plugin has an integrated url replacing, supports tagging and it's possible to send a message as e-mail to other users. So it's great for supporting communication within your blog team or it's a nice scratchpad. ;-)
+WP Admin Microblog adds a seperate microblog in your WordPress backend. The plugin has an integrated url replacing, supports some bbcodes, tagging and it's possible to send a message as e-mail to other users. So it's great for supporting communication within your blog team or it's a nice scratchpad. ;-)
 
 = Supported Languages =
 * English 
@@ -56,6 +56,9 @@ If you will send your message as an e-mail to any user, so write @username (exam
 No, sorry. Inline tagging is comming soon.
 
 == Changelog == 
+= 0.5.2 =
+* New: Possible to use bbcodes for bold, italic, strikethrough and underline
+* Bugfix: Fixed two security vulnerabilities (XSS)
 = 0.5.1 =
 * Changed: The plugin gives an warning if there are no tags in the database --> prevent a SQL error.
 * Bugfix: Fixed an installer bug

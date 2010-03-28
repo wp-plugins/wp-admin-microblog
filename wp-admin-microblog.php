@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.5.1
+Version: 0.5.2
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -28,6 +28,10 @@ Max WP Version: 2.9.2
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	
+	
+	You find the license text under:
+	http://www.opensource.org/licenses/gpl-2.0.php
 */
 
 // Define databases
@@ -54,6 +58,7 @@ function add_message ($content, $user, $tags, $parent) {
 	global $admin_blog_posts;
 	global $admin_blog_tags;
 	global $admin_blog_relations;
+	$content = htmlentities(utf8_decode($content));
 	$content = nl2br($content);
 	$sql = sprintf("INSERT INTO " . $admin_blog_posts . " (`post_parent`, `text`, `date`, `user`) VALUES('$parent', '$content', NOW(), '$user')", 
 		mysql_real_escape_string( "$" . $admin_blog_posts . "_text"));
@@ -114,6 +119,7 @@ function update_message($post_ID, $text) {
 	global $wpdb;
 	global $admin_blog_posts;
 	global $admin_blog_relations;
+	$text = htmlentities(utf8_decode($text));
 	$text = nl2br($text);
 	$wpdb->query( sprintf("UPDATE " . $admin_blog_posts . " SET text = '$text' WHERE post_ID = '$post_ID'",
 	mysql_real_escape_string( "$" . $admin_blog_posts . "_text") ));
@@ -150,6 +156,26 @@ function wp_admin_blog_replace_url($text) {
 	}
 	return $text;
 }
+/* Handle bbcodes
+ * @param $text - string
+ * @param $mode - string --> replace (replace with HTML-Tag) or delete (Delete bbcode)
+ * return $text - string
+*/
+function wp_admin_blog_replace_bbcode($text, $mode = 'replace') {
+	if ($mode == 'replace') {
+		$text = preg_replace("/\[b\](.*)\[\/b\]/Usi", "<strong>\\1</strong>", $text); 
+		$text = preg_replace("/\[i\](.*)\[\/i\]/Usi", "<em>\\1</em>", $text); 
+		$text = preg_replace("/\[u\](.*)\[\/u\]/Usi", "<u>\\1</u>", $text);
+		$text = preg_replace("/\[s\](.*)\[\/s\]/Usi", "<s>\\1</s>", $text);
+	}
+	if ($mode == 'delete') {
+		$text = preg_replace("/\[b\](.*)\[\/b\]/Usi", "\\1", $text); 
+		$text = preg_replace("/\[i\](.*)\[\/i\]/Usi", "\\1", $text); 
+		$text = preg_replace("/\[u\](.*)\[\/u\]/Usi", "\\1", $text);
+		$text = preg_replace("/\[s\](.*)\[\/s\]/Usi", "\\1", $text);
+	}
+	return $text;
+}
 
 /* Find users in string an send mail
  * @param $text - string
@@ -158,6 +184,7 @@ function wp_admin_blog_find_user($text) {
 	global $wpdb;
 	global $admin_blog_posts;
 	$text = $text . ' ';
+	$text = wp_admin_blog_replace_bbcode($text, 'delete');
 	$sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
 	$users = $wpdb->get_results($sql);
 	foreach ($users as $element) {
@@ -167,7 +194,6 @@ function wp_admin_blog_find_user($text) {
 		if ( $test !== false ) {
 			$headers = 'From: ' . get_bloginfo() . ' <' . get_bloginfo('admin_email') . '>' . "\r\n\\";
 			$subject = get_bloginfo() . ': ' .__('New message in admin micoblog','wp_admin_blog');
-			//$text = wp_admin_blog_replace_url($text);
 			wp_mail( $user_info->user_email, $subject, $text, $headers );
 		}	
 	}
@@ -283,8 +309,10 @@ function wp_admin_blog_page() {
     <h2><?php _e('Microblog','wp_admin_blog');?><span class="tp_break">|</span> <small><a onclick="wp_admin_blog_showhide('hilfe_anzeigen')" style="cursor:pointer;"><?php _e('Help','wp_admin_blog'); ?></a></small></h2>
  <div id="hilfe_anzeigen">
     	<h3 class="teachpress_help"><?php _e('Help','wp_admin_blog'); ?></h3>
-        <p class="hilfe_headline"><?php _e('E-Mail Notification','wp_admin_blog'); ?></p>
+        <p class="hilfe_headline"><?php _e('E-mail notification','wp_admin_blog'); ?></p>
         <p class="hilfe_text"><?php _e('If you will send your message as an E-Mail to any user, so write @username (example: @admin)','wp_admin_blog'); ?></p>
+        <p class="hilfe_headline"><?php _e('Text formatting','wp_admin_blog'); ?></p>
+        <p class="hilfe_text"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
         <p class="hilfe_close"><strong><a onclick="wp_admin_blog_showhide('hilfe_anzeigen')" style="cursor:pointer;"><?php _e('close','wp_admin_blog'); ?></a></strong></p>
     </div>
     <div style="width:31%; float:right; padding-right:1%;">
@@ -537,6 +565,7 @@ function wp_admin_blog_page() {
 					$str = "'";
 					$time = wp_admin_blog_datumsplit($post->date);
 					$message_text = wp_admin_blog_replace_url($post->text);
+					$message_text = wp_admin_blog_replace_bbcode($message_text);
 					// Count Number of Replies
 					foreach ($replies as $rep) {
 						if ($rep->post_parent == $post->post_ID) {
