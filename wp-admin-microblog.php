@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.5.2
+Version: 0.5.3
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -48,51 +48,70 @@ function wp_admin_blog_add_menu_settings() {
 	add_options_page(__('WP Admin Microblog Settings','wp_admin_blog'),'WP Admin Microblog','administrator','wp-admin-blog', 'wp_admin_blog_settings');
 }
 
+/* Save all variables
+ * @param $var
+ * @param $type - integer, string (default)
+*/
+function wp_admin_blog_sec_var($var, $type = 'string') {
+	$var = htmlentities(utf8_decode($var));
+	if ($type == 'string') { 
+		/* precipitate problems with double slashes
+		if (get_magic_quotes_gpc() == 0) {
+			$var = addslashes($var);
+		} */
+	}
+	if ($type == 'integer') {
+		settype($var, 'integer');
+	}
+	return $var;
+}
+
 /* Add new message
  * @param $content - text of a message
  * @param $user - WordPress user ID
  * @param $tags - string with the tags
  */
-function add_message ($content, $user, $tags, $parent) {
+function wp_admin_blog_add_message ($content, $user, $tags, $parent) {
 	global $wpdb;
 	global $admin_blog_posts;
 	global $admin_blog_tags;
 	global $admin_blog_relations;
-	$content = htmlentities(utf8_decode($content));
-	$content = nl2br($content);
-	$sql = sprintf("INSERT INTO " . $admin_blog_posts . " (`post_parent`, `text`, `date`, `user`) VALUES('$parent', '$content', NOW(), '$user')", 
-		mysql_real_escape_string( "$" . $admin_blog_posts . "_text"));
-	$wpdb->query($sql);
-	// Tags
-	$array = explode(",",$tags);
-	foreach($array as $element) {
-		// Check if tag is in database
-		$element = trim($element);
-		if ($element != "" && $element != __('Tags (seperate with comma)', 'wp_admin_blog')) {
-			$abfrage = "SELECT tag_ID FROM " . $admin_blog_tags . " WHERE name = '$element'";
-			$check = $wpdb->query($abfrage);
-			// if not, then insert tag
-			if ($check == 0){
-				$eintrag = sprintf("INSERT INTO " . $admin_blog_tags . " (`name`) VALUES('$element')", 
-				mysql_real_escape_string( "$" . $admin_blog_tags . "_name") );
-				$wpdb->query($eintrag);
-				$row = $wpdb->get_results($abfrage);
-			}
-			else {
-				$row = $wpdb->get_results($abfrage);
-			}
-			// Find post_ID and tag_ID and insert the relation
-			foreach($row as $row) {
-				$row2 = "SELECT post_ID FROM " . $admin_blog_posts . " WHERE text ='$content' AND user='$user'";
-				$row2 = $wpdb->get_results($row2);
-				foreach ($row2 as $row2) {
-					// check if the relation already exist
-					$test = "SELECT post_ID FROM " .$admin_blog_relations . " WHERE post_ID = '$row2->post_ID' AND tag_ID = '$row->tag_ID'";
-					$test = $wpdb->query($test);
-					// if not, then insert the relation
-					if ($test == 0) {
-						$eintrag2 = "INSERT INTO " .$admin_blog_relations . " (post_ID, tag_ID) VALUES ('$row2->post_ID', '$row->tag_ID')";
-						$wpdb->query($eintrag2);
+	if ($content != '') {
+		$content = nl2br($content);
+		$sql = sprintf("INSERT INTO " . $admin_blog_posts . " (`post_parent`, `text`, `date`, `user`) VALUES('$parent', '$content', NOW(), '$user')", 
+			mysql_real_escape_string( "$" . $admin_blog_posts . "_text"));
+		$wpdb->query($sql);
+		// Tags
+		$array = explode(",",$tags);
+		foreach($array as $element) {
+			// Check if tag is in database
+			$element = trim($element);
+			if ($element != "" && $element != __('Tags (seperate with comma)', 'wp_admin_blog')) {
+				$abfrage = "SELECT tag_ID FROM " . $admin_blog_tags . " WHERE name = '$element'";
+				$check = $wpdb->query($abfrage);
+				// if not, then insert tag
+				if ($check == 0){
+					$eintrag = sprintf("INSERT INTO " . $admin_blog_tags . " (`name`) VALUES('$element')", 
+					mysql_real_escape_string( "$" . $admin_blog_tags . "_name") );
+					$wpdb->query($eintrag);
+					$row = $wpdb->get_results($abfrage);
+				}
+				else {
+					$row = $wpdb->get_results($abfrage);
+				}
+				// Find post_ID and tag_ID and insert the relation
+				foreach($row as $row) {
+					$row2 = "SELECT post_ID FROM " . $admin_blog_posts . " WHERE text ='$content' AND user='$user'";
+					$row2 = $wpdb->get_results($row2);
+					foreach ($row2 as $row2) {
+						// check if the relation already exist
+						$test = "SELECT post_ID FROM " .$admin_blog_relations . " WHERE post_ID = '$row2->post_ID' AND tag_ID = '$row->tag_ID'";
+						$test = $wpdb->query($test);
+						// if not, then insert the relation
+						if ($test == 0) {
+							$eintrag2 = "INSERT INTO " .$admin_blog_relations . " (post_ID, tag_ID) VALUES ('$row2->post_ID', '$row->tag_ID')";
+							$wpdb->query($eintrag2);
+						}
 					}
 				}
 			}
@@ -104,7 +123,7 @@ function add_message ($content, $user, $tags, $parent) {
 /* Delete message
  * @param $delete - Post ID
  */
-function del_message($delete) {
+function wp_admin_blog_del_message($delete) {
 	global $wpdb;
 	global $admin_blog_posts;
 	global $admin_blog_relations;
@@ -115,11 +134,10 @@ function del_message($delete) {
  * @param $post_ID - Post ID
  * @param $text - text
  */
-function update_message($post_ID, $text) {
+function wp_admin_blog_update_message($post_ID, $text) {
 	global $wpdb;
 	global $admin_blog_posts;
 	global $admin_blog_relations;
-	$text = htmlentities(utf8_decode($text));
 	$text = nl2br($text);
 	$wpdb->query( sprintf("UPDATE " . $admin_blog_posts . " SET text = '$text' WHERE post_ID = '$post_ID'",
 	mysql_real_escape_string( "$" . $admin_blog_posts . "_text") ));
@@ -268,16 +286,16 @@ function wp_admin_blog_page() {
 	global $admin_blog_relations;
 	get_currentuserinfo();
 	$user = $current_user->ID;
-	$content = $_POST[content];
-	$tags = htmlentities(utf8_decode($_POST[tags]));
-	$author = htmlentities(utf8_decode($_GET[author]));
-	$tag = htmlentities(utf8_decode($_GET[tag]));
-	$delete = htmlentities(utf8_decode($_GET[delete]));
-	$search = htmlentities(utf8_decode($_GET[search]));
-	$text = $_GET[edit_text];
-	$edit_message_ID = htmlentities(utf8_decode($_GET[message_ID]));
-	$parent_ID = htmlentities(utf8_decode($_GET[parent_ID]));
-	$rpl = htmlentities(utf8_decode($_GET[rpl]));
+	$content = wp_admin_blog_sec_var($_POST[content]);
+	$text = wp_admin_blog_sec_var($_GET[edit_text]);
+	$tags = wp_admin_blog_sec_var($_POST[tags]);
+	$author = wp_admin_blog_sec_var($_GET[author]);
+	$tag = wp_admin_blog_sec_var($_GET[tag]);
+	$search = wp_admin_blog_sec_var($_GET[search]);
+	$edit_message_ID = wp_admin_blog_sec_var($_GET[message_ID], 'integer');
+	$parent_ID = wp_admin_blog_sec_var($_GET[parent_ID], 'integer');
+	$rpl = wp_admin_blog_sec_var($_GET[rpl], 'integer');
+	$delete = wp_admin_blog_sec_var($_GET[delete], 'integer');
 	$number_messages = 10;
 	// Handles limits 
 	if (isset($_GET[limit])) {
@@ -291,17 +309,17 @@ function wp_admin_blog_page() {
 	}
 	// Handles actions
 	if (isset($_POST[send])) {
-		add_message($content, $user, $tags, 0);
+		wp_admin_blog_add_message($content, $user, $tags, 0);
 		$content = "";
 	}	
 	if (isset($_GET[delete])) {
-		del_message($delete);
+		wp_admin_blog_del_message($delete);
 	}
 	if (isset($_GET[edit_message_submit])) {
-		update_message($edit_message_ID, $text);
+		wp_admin_blog_update_message($edit_message_ID, $text);
 	}
 	if (isset($_GET[reply_message_submit])) {
-		add_message($text, $user, $tags, $parent_ID);
+		wp_admin_blog_add_message($text, $user, $tags, $parent_ID);
 	}
 	?>
     <div class="wrap" style="max-width:1200px; min-width:780px; width:96%; padding-top:10px;">

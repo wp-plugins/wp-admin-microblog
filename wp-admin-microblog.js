@@ -17,8 +17,9 @@ function editMessage(post_ID) {
 		if (isNaN(document.getElementById(textarea))) {
 		}
 		else {
+			var reg = /<(.*?)>/g;
 			text = document.getElementById(message_text_field).value;
-			text = text.replace( "<br />", "" );
+			text = text.replace( reg, "" );
 			// create div
 			var editor = document.createElement('div');
 			editor.id = "div_edit";

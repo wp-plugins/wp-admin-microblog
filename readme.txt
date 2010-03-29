@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 
 WP Admin Microblog adds a seperate microblog in your WordPress backend.
 
@@ -56,11 +56,15 @@ If you will send your message as an e-mail to any user, so write @username (exam
 No, sorry. Inline tagging is comming soon.
 
 == Changelog == 
+= 0.5.3 =
+* Bugfix: Fixed a problem with <br /> tags, when editing messages
+* Bugfix: Fixed some security vulnerabilities (SQL injections)
+* Bugfix: Prevent sending of clean messages
 = 0.5.2 =
 * New: Possible to use bbcodes for bold, italic, strikethrough and underline
 * Bugfix: Fixed two security vulnerabilities (XSS)
 = 0.5.1 =
-* Changed: The plugin gives an warning if there are no tags in the database --> prevent a SQL error.
+* Changed: The plugin gives an warning if there are no tags in the database --> prevent a SQL error
 * Bugfix: Fixed an installer bug
 = 0.5.0 =
 * First public release

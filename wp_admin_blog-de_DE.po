@@ -25,207 +25,207 @@ msgid "Blog"
 msgstr "Blog"
 
 #: wp-admin-microblog.php:45
-#: wp-admin-microblog.php:309
+#: wp-admin-microblog.php:327
 #@ wp_admin_blog
 msgid "Microblog"
 msgstr "Microblog"
 
 #: wp-admin-microblog.php:48
-#: wp-admin-microblog.php:232
+#: wp-admin-microblog.php:250
 #@ wp_admin_blog
 msgid "WP Admin Microblog Settings"
 msgstr "WP Admin Microblog Einstellungen"
 
-#: wp-admin-microblog.php:71
-#: wp-admin-microblog.php:442
+#: wp-admin-microblog.php:89
+#: wp-admin-microblog.php:460
 #@ wp_admin_blog
 msgid "Tags (seperate with comma)"
 msgstr "Tags (durch Komma trennen)"
 
-#: wp-admin-microblog.php:196
+#: wp-admin-microblog.php:214
 #@ wp_admin_blog
 msgid "New message in admin micoblog"
 msgstr "Neue Nachricht im Microblog"
 
-#: wp-admin-microblog.php:237
+#: wp-admin-microblog.php:255
 #@ wp_admin_blog
 msgid "Access for"
 msgstr "Zugriff für"
 
-#: wp-admin-microblog.php:237
+#: wp-admin-microblog.php:255
 #@ wp_admin_blog
 msgid "Select which userrole your users must have to use WP Admin Microblog."
 msgstr "Wähle aus, welche Nutzerrolle die Nutzer haben müssen, um WP Admin Microblog nutzen zu können."
 
-#: wp-admin-microblog.php:251
+#: wp-admin-microblog.php:269
 #@ wp_admin_blog
 msgid "use &lt;Ctrl&gt; key to select multiple roles"
 msgstr "nutze &lt;Strg&gt; um mehrere Rollen auszuwählen"
 
-#: wp-admin-microblog.php:256
+#: wp-admin-microblog.php:274
 #@ wp_admin_blog
 msgid "Save Changes"
 msgstr "Änderungen speichern"
 
-#: wp-admin-microblog.php:309
-#: wp-admin-microblog.php:311
+#: wp-admin-microblog.php:327
+#: wp-admin-microblog.php:329
 #@ wp_admin_blog
 msgid "Help"
 msgstr "Hilfe"
 
-#: wp-admin-microblog.php:313
+#: wp-admin-microblog.php:331
 #@ wp_admin_blog
 msgid "If you will send your message as an E-Mail to any user, so write @username (example: @admin)"
 msgstr "Wenn eine Nachricht auch als E-Mail zu einem Nutzer gesendet werden soll, dann schreibe @username (Beispiel: @admin)"
 
-#: wp-admin-microblog.php:316
+#: wp-admin-microblog.php:334
 #@ wp_admin_blog
 msgid "close"
 msgstr "schließen"
 
-#: wp-admin-microblog.php:328
+#: wp-admin-microblog.php:346
 #@ wp_admin_blog
 msgid "Delete the search from filter"
 msgstr "Lösche die Suche aus dem Suchfilter"
 
-#: wp-admin-microblog.php:328
-#: wp-admin-microblog.php:331
+#: wp-admin-microblog.php:346
+#: wp-admin-microblog.php:349
 #@ wp_admin_blog
 msgid "Search"
 msgstr "Suche"
 
-#: wp-admin-microblog.php:337
+#: wp-admin-microblog.php:355
 #@ wp_admin_blog
 msgid "Search word"
 msgstr "Suchbegriff"
 
-#: wp-admin-microblog.php:338
+#: wp-admin-microblog.php:356
 #@ wp_admin_blog
 msgid "Go"
 msgstr "Suche"
 
-#: wp-admin-microblog.php:385
+#: wp-admin-microblog.php:403
 #@ wp_admin_blog
 msgid "Delete the tag from filter"
 msgstr "Lösche den Tag aus dem Suchfilter"
 
-#: wp-admin-microblog.php:404
+#: wp-admin-microblog.php:422
 #@ wp_admin_blog
 msgid "User"
 msgstr "Nutzer"
 
-#: wp-admin-microblog.php:415
+#: wp-admin-microblog.php:433
 #@ wp_admin_blog
 msgid "Delete user as filter"
 msgstr "Lösche den Nutzer aus dem Suchfilter"
 
-#: wp-admin-microblog.php:435
+#: wp-admin-microblog.php:453
 #@ wp_admin_blog
 msgid "Your Message"
 msgstr "Neue Nachricht"
 
-#: wp-admin-microblog.php:443
+#: wp-admin-microblog.php:461
 #@ wp_admin_blog
 msgid "Send"
 msgstr "Senden"
 
-#: wp-admin-microblog.php:457
+#: wp-admin-microblog.php:475
 #@ wp_admin_blog
 msgid "Search Results"
 msgstr "Suchergebnisse"
 
-#: wp-admin-microblog.php:457
+#: wp-admin-microblog.php:475
 #@ wp_admin_blog
 msgid "Show all"
 msgstr "Zeige alles"
 
-#: wp-admin-microblog.php:460
+#: wp-admin-microblog.php:478
 #@ wp_admin_blog
 msgid "Messages"
 msgstr "Nachrichten"
 
-#: wp-admin-microblog.php:509
+#: wp-admin-microblog.php:527
 #@ wp_admin_blog
 msgid "Sorry, no entries mached your criteria"
 msgstr "Leider gibt es keine Einträge, die den gewählten Kriterien entsprechen"
 
-#: wp-admin-microblog.php:517
+#: wp-admin-microblog.php:535
 #@ wp_admin_blog
 msgid "previous page"
 msgstr "Vorherige Seite"
 
-#: wp-admin-microblog.php:525
-#: wp-admin-microblog.php:538
+#: wp-admin-microblog.php:543
+#: wp-admin-microblog.php:556
 #@ wp_admin_blog
 msgid "Page"
 msgstr "Seite"
 
-#: wp-admin-microblog.php:548
+#: wp-admin-microblog.php:566
 #@ wp_admin_blog
 msgid "next page"
 msgstr "Nächste Seite"
 
-#: wp-admin-microblog.php:582
+#: wp-admin-microblog.php:600
 #@ wp_admin_blog
 msgid "en"
 msgstr "de"
 
-#: wp-admin-microblog.php:594
+#: wp-admin-microblog.php:612
 #@ wp_admin_blog
 msgid "Replies"
 msgstr "Antworten"
 
-#: wp-admin-microblog.php:597
+#: wp-admin-microblog.php:615
 #@ wp_admin_blog
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: wp-admin-microblog.php:597
+#: wp-admin-microblog.php:615
 #@ wp_admin_blog
 msgid "Click to delete this message"
 msgstr "Klicken um diese Nachricht zu löschen"
 
-#: wp-admin-microblog.php:597
+#: wp-admin-microblog.php:615
 #@ wp_admin_blog
 msgid "Delete"
 msgstr "Löschen"
 
-#: wp-admin-microblog.php:599
+#: wp-admin-microblog.php:617
 #@ wp_admin_blog
 msgid "Reply"
 msgstr "Antworten"
 
-#: wp-admin-microblog.php:388
+#: wp-admin-microblog.php:406
 #@ wp_admin_blog
 msgid "Show related messages"
 msgstr "Zeige verwandte Nachrichten"
 
-#: wp-admin-microblog.php:347
+#: wp-admin-microblog.php:365
 #@ wp_admin_blog
 msgid "Tags"
 msgstr "Tags"
 
-#: wp-admin-microblog.php:608
+#: wp-admin-microblog.php:626
 #@ wp_admin_blog
 msgid "by"
 msgstr "von"
 
-#: wp-admin-microblog.php:393
+#: wp-admin-microblog.php:411
 #@ wp_admin_blog
 msgid "No tags available"
 msgstr "Keine Tags verfügbar"
 
-#: wp-admin-microblog.php:312
+#: wp-admin-microblog.php:330
 #@ wp_admin_blog
 msgid "E-mail notification"
 msgstr "E-Mail Benachrichtigung"
 
-#: wp-admin-microblog.php:314
+#: wp-admin-microblog.php:332
 #@ wp_admin_blog
 msgid "Text formatting"
 msgstr "Textformatierung"
 
-#: wp-admin-microblog.php:315
+#: wp-admin-microblog.php:333
 #@ wp_admin_blog
 msgid "You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible."
 msgstr "Du kannst diese einfachen bbcodes zur Textformatierung nutzen: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. Die Verwendung von HTML Tags ist nicht möglich."
