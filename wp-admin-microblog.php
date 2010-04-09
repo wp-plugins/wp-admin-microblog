@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.6.0
+Version: 0.6.1
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -248,10 +248,10 @@ function wp_admin_blog_widget_function() {
 	global $admin_blog_relations;
 	get_currentuserinfo();
 	$user = $current_user->ID;
-	$text = htmlentities(utf8_decode($_POST[wp_admin_blog_edit_text]));
-	$edit_message_ID = htmlentities(utf8_decode($_POST[wp_admin_blog_message_ID]));
-	$parent_ID = htmlentities(utf8_decode($_POST[wp_admin_blog_parent_ID]));
-	$delete = htmlentities(utf8_decode($_GET[wp_admin_blog_delete]));
+	$text = wp_admin_blog_sec_var($_POST[wp_admin_blog_edit_text]);
+	$edit_message_ID = wp_admin_blog_sec_var($_POST[wp_admin_blog_message_ID], 'integer');
+	$parent_ID = wp_admin_blog_sec_var($_POST[wp_admin_blog_parent_ID], 'integer');
+	$delete = wp_admin_blog_sec_var($_GET[wp_admin_blog_delete], 'integer');
 	if (isset($_POST[wp_admin_blog_edit_message_submit])) {
 		wp_admin_blog_update_message($edit_message_ID, $text);
 	}
