@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.5.3
+Version: 0.6.0
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -237,6 +237,95 @@ function wp_admin_blog_update_options ($roles) {
 } 
 
 /*
+ * Dashboard widget
+*/ 
+
+function wp_admin_blog_widget_function() {
+	global $current_user;
+	global $wpdb;
+	global $admin_blog_posts;
+	global $admin_blog_tags;
+	global $admin_blog_relations;
+	get_currentuserinfo();
+	$user = $current_user->ID;
+	$text = htmlentities(utf8_decode($_POST[wp_admin_blog_edit_text]));
+	$edit_message_ID = htmlentities(utf8_decode($_POST[wp_admin_blog_message_ID]));
+	$parent_ID = htmlentities(utf8_decode($_POST[wp_admin_blog_parent_ID]));
+	$delete = htmlentities(utf8_decode($_GET[wp_admin_blog_delete]));
+	if (isset($_POST[wp_admin_blog_edit_message_submit])) {
+		wp_admin_blog_update_message($edit_message_ID, $text);
+	}
+	if (isset($_POST[wp_admin_blog_reply_message_submit])) {
+		wp_admin_blog_add_message($text, $user, $tags, $parent_ID);
+	}
+	if (isset($_GET[wp_admin_blog_delete])) {
+		wp_admin_blog_del_message($delete);
+	}
+	echo '<form method="post" name="wp_admin_blog_dashboard_widget" id="wp_admin_blog_dashboard_widget" action="' .  $PHP_SELF . '">';
+	echo '<table border="0" cellpadding="0" cellspacing="0">';
+	$sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY post_ID DESC LIMIT 0, 5";
+	$rows = $wpdb->get_results($sql);
+	$sql = "SELECT COUNT(post_parent) AS gesamt, post_parent FROM " . $admin_blog_posts . " GROUP BY post_parent";
+	$replies = $wpdb->get_results($sql);
+	foreach ($rows as $post) {
+		$user_info = get_userdata($post->user);
+		$edit_button = '';
+		$count_rep = 0;
+		$rpl = 0;
+		$str = "'";
+		$time = wp_admin_blog_datumsplit($post->date);
+		$message_text = wp_admin_blog_replace_url($post->text);
+		$message_text = wp_admin_blog_replace_bbcode($message_text);
+		// Count Number of Replies
+		foreach ($replies as $rep) {
+			if ($rep->post_parent == $post->post_ID) {
+				$count_rep = $rep->gesamt + 1;
+				$rpl = $rep->post_parent;
+			}
+			
+			if ($rep->post_parent == $post->post_parent && $post->post_parent != 0) {
+				$count_rep = $rep->gesamt + 1;
+				$rpl = $rep->post_parent;
+			}
+		}
+		// Handles post parent
+		if ($post->post_parent == '0') {
+			$post->post_parent = $post->post_ID;
+		}
+		// Message Menu
+		if ($count_rep != 0) {
+			$edit_button = ' | ' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '';
+		}
+		if ($post->user == $user) {
+			$edit_button = $edit_button . ' | <a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;">' . __('Edit','wp_admin_blog') . '</a> | <a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a>';
+		}
+		$edit_button = $edit_button . ' | <a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;">' . __('Reply','wp_admin_blog') . '</a>';
+		// Handles german date format
+		if ( __('en','wp_admin_blog') == 'de') {
+			$message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
+		}
+		else {
+			$message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
+		}
+		echo '<tr>';
+		echo '<td style="border-bottom:1px solid rgb(223 ,223,223);">';
+		echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' ' . $time[0][3]. ':' . $time[0][4] . ' | ' . $user_info->display_name . '' . $edit_button . '</p>';
+		echo '<p>' . $message_text . '</p></div>';
+		echo '<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
+		echo '</td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+	echo '</form>';
+}
+
+function wp_admin_blog_add_widgets() {
+	if ( current_user_can( 'use_wp_admin_microblog' ) ) {
+		wp_add_dashboard_widget('wp_admin_blog_dashboard_widget', '' . __('Microblog - Last Messages','wp_admin_blog') . '', 'wp_admin_blog_widget_function');
+	}
+}
+
+/*
  * PAGES
 */ 
 // Option Page
@@ -287,13 +376,13 @@ function wp_admin_blog_page() {
 	get_currentuserinfo();
 	$user = $current_user->ID;
 	$content = wp_admin_blog_sec_var($_POST[content]);
-	$text = wp_admin_blog_sec_var($_GET[edit_text]);
+	$text = wp_admin_blog_sec_var($_GET[wp_admin_blog_edit_text]);
 	$tags = wp_admin_blog_sec_var($_POST[tags]);
 	$author = wp_admin_blog_sec_var($_GET[author]);
 	$tag = wp_admin_blog_sec_var($_GET[tag]);
 	$search = wp_admin_blog_sec_var($_GET[search]);
-	$edit_message_ID = wp_admin_blog_sec_var($_GET[message_ID], 'integer');
-	$parent_ID = wp_admin_blog_sec_var($_GET[parent_ID], 'integer');
+	$edit_message_ID = wp_admin_blog_sec_var($_GET[wp_admin_blog_message_ID], 'integer');
+	$parent_ID = wp_admin_blog_sec_var($_GET[wp_admin_blog_parent_ID], 'integer');
 	$rpl = wp_admin_blog_sec_var($_GET[rpl], 'integer');
 	$delete = wp_admin_blog_sec_var($_GET[delete], 'integer');
 	$number_messages = 10;
@@ -315,10 +404,10 @@ function wp_admin_blog_page() {
 	if (isset($_GET[delete])) {
 		wp_admin_blog_del_message($delete);
 	}
-	if (isset($_GET[edit_message_submit])) {
+	if (isset($_GET[wp_admin_blog_edit_message_submit])) {
 		wp_admin_blog_update_message($edit_message_ID, $text);
 	}
-	if (isset($_GET[reply_message_submit])) {
+	if (isset($_GET[wp_admin_blog_reply_message_submit])) {
 		wp_admin_blog_add_message($text, $user, $tags, $parent_ID);
 	}
 	?>
@@ -514,12 +603,12 @@ function wp_admin_blog_page() {
 			// is replies?
 			elseif( isset($_GET[rpl]) ) {
 				$sql = "SELECT * FROM " . $admin_blog_posts . " WHERE post_parent = '$rpl' OR post_ID = '$rpl' ORDER BY post_ID DESC LIMIT $message_limit, $number_messages";
-				$test_sql = "SELECT * FROM " . $admin_blog_posts . " WHERE post_parent = '$rpl' OR post_ID = '$rpl' ORDER BY post_ID DESC";
+				$test_sql = "SELECT post_ID FROM " . $admin_blog_posts . " WHERE post_parent = '$rpl' OR post_ID = '$rpl' ORDER BY post_ID DESC";
 			}
 			// Normal SQL
 			else {
             	$sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY post_ID DESC LIMIT $message_limit, $number_messages";
-				$test_sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY post_ID DESC";
+				$test_sql = "SELECT post_ID FROM " . $admin_blog_posts . " ORDER BY post_ID DESC";
 			}
 			// Find number of entries
 			$test = $wpdb->query($test_sql);
@@ -623,9 +712,9 @@ function wp_admin_blog_page() {
 					echo '<tr>';
 					echo '<td style="padding:10px; width:60px;"><span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 45) . '</span></td>';
 					echo '<td style="padding:10px;">';
-					echo '<div id="message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button . '</p>';
+					echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button . '</p>';
 					echo '<p>' . $message_text . '</p></div>';
-                    echo '<input name="message_text" id="message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
+                    echo '<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
 					echo '</td>';
 					echo '</tr>';
 					$message_date_old = $message_date;
@@ -649,12 +738,12 @@ function wp_admin_blog_page() {
  * Add scripts ans stylesheets
 */ 
 function wp_admin_blog_header() {
-	if ( eregi('wp-admin-microblog', $_GET[page]) ) {
+	// if ( eregi('wp-admin-microblog', $_GET[page]) ) {
 		wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
 		wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
 		wp_enqueue_style('wp_admin_blog_css');
 		wp_enqueue_script('wp_admin_blog');
-	}
+	//}
 }
 /*
  * Installer
@@ -731,5 +820,5 @@ add_action('init', 'wp_admin_blog_language_support');
 add_action('admin_init','wp_admin_blog_header');
 add_action('admin_menu','wp_admin_blog_menu');
 add_action('admin_menu', 'wp_admin_blog_add_menu_settings');
-
+add_action('wp_dashboard_setup', 'wp_admin_blog_add_widgets' );
 ?>

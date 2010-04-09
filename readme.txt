@@ -3,13 +3,13 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.5.3
+Stable tag: 0.6.0
 
 WP Admin Microblog adds a seperate microblog in your WordPress backend.
 
 == Description ==
 
-WP Admin Microblog adds a seperate microblog in your WordPress backend. The plugin has an integrated url replacing, supports some bbcodes, tagging and it's possible to send a message as e-mail to other users. So it's great for supporting communication within your blog team or it's a nice scratchpad. ;-)
+WP Admin Microblog adds a seperate microblog in your WordPress backend. The plugin has an integrated url replacing, supports some bbcodes, tagging and it's possible to send a message via e-mail to other users. Now, with the new dashboard widget, you can read, respond, edit and delete messages directly. So, WP Admin Microblog is great for supporting the communication within blog teams or it's a nice scratchpad. ;-)
 
 = Supported Languages =
 * English 
@@ -45,19 +45,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 == Screenshots ==
 
-1. Screenshot The interface
+1. The interface
+2. The dashboard widget
 
 == Frequently Asked Questions ==
 
-= How I can send a message as e-mail notification? =
-If you will send your message as an e-mail to any user, so write @username (example: @admin).
+= How can I send a message as e-mail notification? =
+If you will send your message via e-mail to any user, so write @username (example: @admin).
 
 = Can I add tags directly with a '#' before the tag ? =
 No, sorry. Inline tagging is comming soon.
 
-== Changelog == 
+== Changelog ==
+= 0.6.0 =
+* New: Dashboard widget
 = 0.5.3 =
-* Bugfix: Fixed a problem with <br /> tags, when editing messages
+* Bugfix: Fixed a problem with `<br />` tags, when editing messages
 * Bugfix: Fixed some security vulnerabilities (SQL injections)
 * Bugfix: Prevent sending of clean messages
 = 0.5.2 =

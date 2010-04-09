@@ -9,9 +9,9 @@ function wp_admin_blog_showhide(where) {
 }
 // for editing messages
 function editMessage(post_ID) {
-		var parent = "message_" + post_ID;
-		var message_text_field = "message_text_" + post_ID;
-		var textarea = "edit_text";
+		var parent = "wp_admin_blog_message_" + post_ID;
+		var message_text_field = "wp_admin_blog_message_text_" + post_ID;
+		var textarea = "wp_admin_blog_edit_text";
 		var text;
 		
 		if (isNaN(document.getElementById(textarea))) {
@@ -25,7 +25,7 @@ function editMessage(post_ID) {
 			editor.id = "div_edit";
 			// create hidden fields
 			var field_neu = document.createElement('input');
-			field_neu.name = "message_ID";
+			field_neu.name = "wp_admin_blog_message_ID";
 			field_neu.type = "hidden";
 			field_neu.value = post_ID;
 			// create textarea
@@ -37,7 +37,7 @@ function editMessage(post_ID) {
 			textarea_neu.style.width = "100%";
 			// create button
 			var save_button = document.createElement('input');
-			save_button.name = "edit_message_submit";
+			save_button.name = "wp_admin_blog_edit_message_submit";
 			save_button.value = "Save";
 			save_button.type = "submit";
 			save_button.className = "button-primary";
@@ -56,8 +56,8 @@ function editMessage(post_ID) {
     }
 // for editing messages
 function replyMessage(post_ID, parent_ID) {
-		var parent = "message_" + post_ID;
-		var textarea = "edit_text";
+		var parent = "wp_admin_blog_message_" + post_ID;
+		var textarea = "wp_admin_blog_edit_text";
 		
 		if (isNaN(document.getElementById(textarea))) {
 		}
@@ -67,7 +67,7 @@ function replyMessage(post_ID, parent_ID) {
 			editor.id = "div_reply";
 			// create hidden fields
 			var field_neu = document.createElement('input');
-			field_neu.name = "parent_ID";
+			field_neu.name = "wp_admin_blog_parent_ID";
 			field_neu.type = "hidden";
 			field_neu.value = parent_ID;
 			// create textarea
@@ -78,7 +78,7 @@ function replyMessage(post_ID, parent_ID) {
 			textarea_neu.style.width = "100%";
 			// create button
 			var save_button = document.createElement('input');
-			save_button.name = "reply_message_submit";
+			save_button.name = "wp_admin_blog_reply_message_submit";
 			save_button.value = "Submit";
 			save_button.type = "submit";
 			save_button.className = "button-primary";
