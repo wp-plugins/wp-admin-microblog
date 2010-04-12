@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.6.1
+Version: 0.6.2
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -42,7 +42,7 @@ $admin_blog_relations = $wpdb->prefix . 'admin_blog_relations';
 
 // Define menus
 function wp_admin_blog_menu() {
-	add_menu_page(__('Blog','wp_admin_blog'), __('Microblog','wp_admin_blog'),'use_wp_admin_microblog', __FILE__, 'wp_admin_blog_page', WP_PLUGIN_URL . '/wp-admin-microblog/logo.png');
+	add_menu_page(__('Blog','wp_admin_blog'), __('Microblog','wp_admin_blog'),'use_wp_admin_microblog', __FILE__, 'wp_admin_blog_page', WP_PLUGIN_URL . '/wp-admin-microblog/images/logo.png');
 }
 function wp_admin_blog_add_menu_settings() {
 	add_options_page(__('WP Admin Microblog Settings','wp_admin_blog'),'WP Admin Microblog','administrator','wp-admin-blog', 'wp_admin_blog_settings');
@@ -166,8 +166,8 @@ function wp_admin_blog_datumsplit($datum) {
  * return $text - string
 */ 
 function wp_admin_blog_replace_url($text) {	
-	if ( preg_match_all("((http://|https://|ftp://|mailto:)[^ ]+)", $text, $match) ) {
-		$prefix = '#(^|[^"=]{1})(http://|ftp://|mailto:|news:)([^\s]+)([\s\n]|$)#sm';
+	if ( preg_match_all("((http://|https://|ftp://|mailto:|news:)[^ ]+)", $text, $match) ) {
+		$prefix = '#(^|[^"=]{1})(http://|https://|ftp://|mailto:|news:)([^\s]+)([\s\n]|$)#sm';
 		for ($x = 0; $x < count($match[0]); $x++) {
 			$text = preg_replace($prefix, ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $match[0][$x] . '</a> ', $text); 
 		}
@@ -812,7 +812,7 @@ function wp_admin_blog_install () {
 }
 // load language support
 function wp_admin_blog_language_support() {
-	load_plugin_textdomain('wp_admin_blog', false, 'wp-admin-microblog');
+	load_plugin_textdomain('wp_admin_blog', false, 'wp-admin-microblog/languages');
 }
 // Register WordPress hooks
 register_activation_hook( __FILE__, 'wp_admin_blog_install');
