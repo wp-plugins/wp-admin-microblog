@@ -25,219 +25,271 @@ msgid "Blog"
 msgstr "Blog"
 
 #: wp-admin-microblog.php:45
-#: wp-admin-microblog.php:416
+#: wp-admin-microblog.php:490
 #@ wp_admin_blog
 msgid "Microblog"
 msgstr "Microblog"
 
 #: wp-admin-microblog.php:48
-#: wp-admin-microblog.php:339
+#: wp-admin-microblog.php:381
 #@ wp_admin_blog
 msgid "WP Admin Microblog Settings"
 msgstr "WP Admin Microblog Einstellungen"
 
 #: wp-admin-microblog.php:89
-#: wp-admin-microblog.php:549
+#: wp-admin-microblog.php:624
 #@ wp_admin_blog
 msgid "Tags (seperate with comma)"
 msgstr "Tags (durch Komma trennen)"
 
-#: wp-admin-microblog.php:214
+#: wp-admin-microblog.php:221
 #@ wp_admin_blog
 msgid "New message in admin micoblog"
 msgstr "Neue Nachricht im Microblog"
 
-#: wp-admin-microblog.php:344
+#: wp-admin-microblog.php:413
 #@ wp_admin_blog
 msgid "Access for"
 msgstr "Zugriff für"
 
-#: wp-admin-microblog.php:344
-#@ wp_admin_blog
-msgid "Select which userrole your users must have to use WP Admin Microblog."
-msgstr "Wähle aus, welche Nutzerrolle die Nutzer haben müssen, um WP Admin Microblog nutzen zu können."
-
-#: wp-admin-microblog.php:358
-#@ wp_admin_blog
-msgid "use &lt;Ctrl&gt; key to select multiple roles"
-msgstr "nutze &lt;Strg&gt; um mehrere Rollen auszuwählen"
-
-#: wp-admin-microblog.php:363
+#: wp-admin-microblog.php:432
 #@ wp_admin_blog
 msgid "Save Changes"
 msgstr "Änderungen speichern"
 
-#: wp-admin-microblog.php:416
-#: wp-admin-microblog.php:418
+#: wp-admin-microblog.php:490
+#: wp-admin-microblog.php:492
 #@ wp_admin_blog
 msgid "Help"
 msgstr "Hilfe"
 
-#: wp-admin-microblog.php:420
+#: wp-admin-microblog.php:494
 #@ wp_admin_blog
 msgid "If you will send your message as an E-Mail to any user, so write @username (example: @admin)"
 msgstr "Wenn eine Nachricht auch als E-Mail zu einem Nutzer gesendet werden soll, dann schreibe @username (Beispiel: @admin)"
 
-#: wp-admin-microblog.php:423
+#: wp-admin-microblog.php:497
 #@ wp_admin_blog
 msgid "close"
 msgstr "schließen"
 
-#: wp-admin-microblog.php:435
+#: wp-admin-microblog.php:509
 #@ wp_admin_blog
 msgid "Delete the search from filter"
 msgstr "Lösche die Suche aus dem Suchfilter"
 
-#: wp-admin-microblog.php:435
-#: wp-admin-microblog.php:438
+#: wp-admin-microblog.php:509
+#: wp-admin-microblog.php:512
 #@ wp_admin_blog
 msgid "Search"
 msgstr "Suche"
 
-#: wp-admin-microblog.php:444
+#: wp-admin-microblog.php:518
 #@ wp_admin_blog
 msgid "Search word"
 msgstr "Suchbegriff"
 
-#: wp-admin-microblog.php:445
+#: wp-admin-microblog.php:519
 #@ wp_admin_blog
 msgid "Go"
 msgstr "Suche"
 
-#: wp-admin-microblog.php:492
+#: wp-admin-microblog.php:567
 #@ wp_admin_blog
 msgid "Delete the tag from filter"
 msgstr "Lösche den Tag aus dem Suchfilter"
 
-#: wp-admin-microblog.php:511
+#: wp-admin-microblog.php:586
 #@ wp_admin_blog
 msgid "User"
 msgstr "Nutzer"
 
-#: wp-admin-microblog.php:522
+#: wp-admin-microblog.php:597
 #@ wp_admin_blog
 msgid "Delete user as filter"
 msgstr "Lösche den Nutzer aus dem Suchfilter"
 
-#: wp-admin-microblog.php:542
+#: wp-admin-microblog.php:617
 #@ wp_admin_blog
 msgid "Your Message"
 msgstr "Neue Nachricht"
 
-#: wp-admin-microblog.php:550
+#: wp-admin-microblog.php:625
 #@ wp_admin_blog
 msgid "Send"
 msgstr "Senden"
 
-#: wp-admin-microblog.php:564
+#: wp-admin-microblog.php:639
 #@ wp_admin_blog
 msgid "Search Results"
 msgstr "Suchergebnisse"
 
-#: wp-admin-microblog.php:564
+#: wp-admin-microblog.php:639
 #@ wp_admin_blog
 msgid "Show all"
 msgstr "Zeige alles"
 
-#: wp-admin-microblog.php:567
+#: wp-admin-microblog.php:642
 #@ wp_admin_blog
 msgid "Messages"
 msgstr "Nachrichten"
 
-#: wp-admin-microblog.php:616
+#: wp-admin-microblog.php:691
 #@ wp_admin_blog
 msgid "Sorry, no entries mached your criteria"
 msgstr "Leider gibt es keine Einträge, die den gewählten Kriterien entsprechen"
 
-#: wp-admin-microblog.php:624
+#: wp-admin-microblog.php:699
 #@ wp_admin_blog
 msgid "previous page"
 msgstr "Vorherige Seite"
 
-#: wp-admin-microblog.php:632
-#: wp-admin-microblog.php:645
+#: wp-admin-microblog.php:707
+#: wp-admin-microblog.php:720
 #@ wp_admin_blog
 msgid "Page"
 msgstr "Seite"
 
-#: wp-admin-microblog.php:655
+#: wp-admin-microblog.php:730
 #@ wp_admin_blog
 msgid "next page"
 msgstr "Nächste Seite"
 
-#: wp-admin-microblog.php:304
-#: wp-admin-microblog.php:689
+#: wp-admin-microblog.php:332
+#: wp-admin-microblog.php:764
 #@ wp_admin_blog
 msgid "en"
 msgstr "de"
 
-#: wp-admin-microblog.php:297
-#: wp-admin-microblog.php:701
+#: wp-admin-microblog.php:325
+#: wp-admin-microblog.php:776
 #@ wp_admin_blog
 msgid "Replies"
 msgstr "Antworten"
 
-#: wp-admin-microblog.php:300
-#: wp-admin-microblog.php:704
+#: wp-admin-microblog.php:328
+#: wp-admin-microblog.php:779
 #@ wp_admin_blog
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: wp-admin-microblog.php:300
-#: wp-admin-microblog.php:704
+#: wp-admin-microblog.php:328
+#: wp-admin-microblog.php:779
 #@ wp_admin_blog
 msgid "Click to delete this message"
 msgstr "Klicken um diese Nachricht zu löschen"
 
-#: wp-admin-microblog.php:300
-#: wp-admin-microblog.php:704
+#: wp-admin-microblog.php:328
+#: wp-admin-microblog.php:779
 #@ wp_admin_blog
 msgid "Delete"
 msgstr "Löschen"
 
-#: wp-admin-microblog.php:302
-#: wp-admin-microblog.php:706
+#: wp-admin-microblog.php:330
+#: wp-admin-microblog.php:781
 #@ wp_admin_blog
 msgid "Reply"
 msgstr "Antworten"
 
-#: wp-admin-microblog.php:495
+#: wp-admin-microblog.php:570
 #@ wp_admin_blog
 msgid "Show related messages"
 msgstr "Zeige verwandte Nachrichten"
 
-#: wp-admin-microblog.php:454
+#: wp-admin-microblog.php:528
 #@ wp_admin_blog
 msgid "Tags"
 msgstr "Tags"
 
-#: wp-admin-microblog.php:715
+#: wp-admin-microblog.php:790
 #@ wp_admin_blog
 msgid "by"
 msgstr "von"
 
-#: wp-admin-microblog.php:500
+#: wp-admin-microblog.php:575
 #@ wp_admin_blog
 msgid "No tags available"
 msgstr "Keine Tags verfügbar"
 
-#: wp-admin-microblog.php:419
+#: wp-admin-microblog.php:493
 #@ wp_admin_blog
 msgid "E-mail notification"
 msgstr "E-Mail Benachrichtigung"
 
-#: wp-admin-microblog.php:421
+#: wp-admin-microblog.php:495
 #@ wp_admin_blog
 msgid "Text formatting"
 msgstr "Textformatierung"
 
-#: wp-admin-microblog.php:422
+#: wp-admin-microblog.php:496
 #@ wp_admin_blog
 msgid "You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible."
 msgstr "Du kannst diese einfachen bbcodes zur Textformatierung nutzen: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. Die Verwendung von HTML Tags ist nicht möglich."
 
-#: wp-admin-microblog.php:324
+#: wp-admin-microblog.php:352
 #@ wp_admin_blog
 msgid "Microblog - Last Messages"
 msgstr "Microblog - Letzte Nachrichten"
+
+#: wp-admin-microblog.php:384
+#@ wp_admin_blog
+msgid "General"
+msgstr "Allgemein"
+
+#: wp-admin-microblog.php:387
+#@ wp_admin_blog
+msgid "Number of tags"
+msgstr "Anzahl Tags"
+
+#: wp-admin-microblog.php:389
+#@ wp_admin_blog
+msgid "Default: 50"
+msgstr "Standard: 50"
+
+#: wp-admin-microblog.php:392
+#@ wp_admin_blog
+msgid "Number of messages per page"
+msgstr "Anzahl Nachrichten pro Seite"
+
+#: wp-admin-microblog.php:394
+#@ wp_admin_blog
+msgid "Default: 10"
+msgstr "Standard: 10"
+
+#: wp-admin-microblog.php:397
+#@ wp_admin_blog
+msgid "Auto notification"
+msgstr "Autobenachrichtigung"
+
+#: wp-admin-microblog.php:401
+#: wp-admin-microblog.php:405
+#@ wp_admin_blog
+msgid "yes"
+msgstr "Ja"
+
+#: wp-admin-microblog.php:402
+#: wp-admin-microblog.php:406
+#@ wp_admin_blog
+msgid "no"
+msgstr "Nein"
+
+#: wp-admin-microblog.php:410
+#@ wp_admin_blog
+msgid "Activate this option and the plugin insert in every reply the string for the auto e-mail notification"
+msgstr "Aktiviere diese Option und das Plugin setzt automatisch vor jede Antwort das Kürzel zum Versenden der E-Mail Benachrichtigung."
+
+#: wp-admin-microblog.php:428
+#@ wp_admin_blog
+msgid "Select which userroles have access to WP Admin Microblog."
+msgstr "Wähle aus, welche Nutzerrollen Zugriff auf das Plugin gewährt wird."
+
+#: wp-admin-microblog.php:428
+#@ wp_admin_blog
+msgid "Use &lt;Ctrl&gt; key to select multiple roles."
+msgstr "Nutze &lt;Strg&gt; um mehrere Rollen auszuwählen."
+
+#: wp-admin-microblog.php:208
+#@ wp_admin_blog
+msgid "Login in the blog under the following address to create a reply: "
+msgstr "Melde dich unter folgender Adresse im Blog an, um eine Antwort zu erstellen:"
 

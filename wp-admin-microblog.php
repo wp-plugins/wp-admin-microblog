@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.6.2
+Version: 0.6.3
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -201,8 +201,15 @@ function wp_admin_blog_replace_bbcode($text, $mode = 'replace') {
 function wp_admin_blog_find_user($text) {
 	global $wpdb;
 	global $admin_blog_posts;
+	
 	$text = $text . ' ';
 	$text = wp_admin_blog_replace_bbcode($text, 'delete');
+	$text = str_replace("<br />","",$text);
+	$text = $text . chr(13). chr(10) . chr(13). chr(10) . __('Login in the blog under the following address to create a reply: ','wp_admin_blog') . wp_login_url();
+	if ( get_settings('blog_charset') == "UTF-8" ) {
+		$text = utf8_encode(html_entity_decode($text));
+	}
+	
 	$sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
 	$users = $wpdb->get_results($sql);
 	foreach ($users as $element) {
@@ -219,10 +226,10 @@ function wp_admin_blog_find_user($text) {
 /* Update who can use the plugin
  * @param $roles
  */
-function wp_admin_blog_update_options ($roles) {
+function wp_admin_blog_update_options ($roles, $tags, $messages, $reply) {
 	global $wp_roles;
     $wp_roles->WP_Roles();
-
+	// Roles
     if ( empty($roles) || ! is_array($roles) ) { 
 		$roles = array(); 
 	}
@@ -234,6 +241,27 @@ function wp_admin_blog_update_options ($roles) {
     foreach ($who_cannot as $role) {
         $wp_roles->remove_cap($role, 'use_wp_admin_microblog');
     }
+	// Number of tags
+	if ( !get_option('wp_admin_blog_number_tags') ) {
+		add_option('wp_admin_blog_number_tags', $tags, '', 'no');
+	}
+	else {
+		update_option('wp_admin_blog_number_tags', $tags );
+	}
+	// Number of messages
+	if ( !get_option('wp_admin_blog_number_messages') ) {
+		add_option('wp_admin_blog_number_messages', $messages, '', 'no');
+	}
+	else {
+		update_option('wp_admin_blog_number_messages', $messages );
+	}
+	// Auto reply
+	if ( !get_option('wp_admin_blog_auto_reply') ) {
+		add_option('wp_admin_blog_auto_reply', $reply, '', 'no');
+	}
+	else {
+		update_option('wp_admin_blog_auto_reply', $reply );
+	}
 } 
 
 /*
@@ -331,17 +359,58 @@ function wp_admin_blog_add_widgets() {
 // Option Page
 function wp_admin_blog_settings () {
 $userrole = $_GET[userrole];
+$check = '';
+$admin_tags = wp_admin_blog_sec_var($_GET[admin_tags], 'integer');
+$admin_messages = wp_admin_blog_sec_var($_GET[admin_messages], 'integer');
+$auto_reply = wp_admin_blog_sec_var($_GET[auto_reply]);
 if ( isset($_GET[save]) ) {
-	wp_admin_blog_update_options($userrole);
+	wp_admin_blog_update_options($userrole, $admin_tags, $admin_messages, $auto_reply);
 }
+
+if ( !get_option('wp_admin_blog_number_tags') ) { $admin_tags = 50; }
+else { $admin_tags = get_option('wp_admin_blog_number_tags'); }
+
+if ( !get_option('wp_admin_blog_number_messages') ) { $admin_messages = 10; }
+else { $admin_messages = get_option('wp_admin_blog_number_messages'); }
+
+if ( !get_option('wp_admin_blog_auto_reply') ) { $auto_reply = 'false'; }
+else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
+
 ?>
 <div class="wrap">
 <h2><?php _e('WP Admin Microblog Settings','wp_admin_blog'); ?></h2>
 <form name="form1" id="form1" method="get" action="<?php echo $PHP_SELF ?>">
 <input name="page" type="hidden" value="wp-admin-blog" />
+<h3><?php _e('General','wp_admin_blog'); ?></h3>
 <table class="form-table">
 	<tr>
-    <th scope="row"><strong><?php _e('Access for','wp_admin_blog'); ?></strong><br /><em><?php _e('Select which userrole your users must have to use WP Admin Microblog.','wp_admin_blog'); ?></em></th>
+    	<th scope="row"><?php _e('Number of tags','wp_admin_blog'); ?></th>
+        <td><input name="admin_tags" type="text" value="<?php echo $admin_tags; ?>" /></td>
+        <td><em><?php _e('Default: 50','wp_admin_blog'); ?></em></td>
+    </tr>
+    <tr>
+    	<th scope="row"><?php _e('Number of messages per page','wp_admin_blog'); ?></th>
+        <td><input name="admin_messages" type="text" value="<?php echo $admin_messages; ?>"/></td>
+        <td><em><?php _e('Default: 10','wp_admin_blog'); ?></em></td>
+    </tr>
+	<tr>
+    	<th scope="row"><?php _e('Auto notification','wp_admin_blog'); ?></th>
+        <td><select name="auto_reply">
+        	<?php
+        	if ($auto_reply == 'true') {
+            	echo '<option value="true" selected="selected">' . __('yes','wp_admin_blog') . '</option>';
+           		echo '<option value="false">' . __('no','wp_admin_blog') . '</option>';
+			}
+			else {
+				echo '<option value="true">' . __('yes','wp_admin_blog') . '</option>';
+				echo '<option value="false" selected="selected">' . __('no','wp_admin_blog') . '</option>';
+			} 
+			  ?>
+        	</select></td>
+        <td><em><?php _e('Activate this option and the plugin insert in every reply the string for the auto e-mail notification','wp_admin_blog'); ?></em></td>
+    </tr>
+	<tr>
+    <th scope="row"><?php _e('Access for','wp_admin_blog'); ?></th>
 	<td>
     <select name="userrole[]" id="userrole" multiple="multiple" style="height:80px;">
 	<?php
@@ -355,8 +424,8 @@ if ( isset($_GET[save]) ) {
     }
     ?>
 	</select>
-	<small class="setting-description"><?php _e('use &lt;Ctrl&gt; key to select multiple roles','wp_admin_blog'); ?></small>
 	</td>
+    <td><em><?php _e('Select which userroles have access to WP Admin Microblog.','wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select multiple roles.','wp_admin_blog'); ?></em></td>
     </tr>
 </table>
 <p class="submit">
@@ -385,7 +454,12 @@ function wp_admin_blog_page() {
 	$parent_ID = wp_admin_blog_sec_var($_GET[wp_admin_blog_parent_ID], 'integer');
 	$rpl = wp_admin_blog_sec_var($_GET[rpl], 'integer');
 	$delete = wp_admin_blog_sec_var($_GET[delete], 'integer');
-	$number_messages = 10;
+	// Number of messages
+	if ( !get_option('wp_admin_blog_number_messages') ) { $number_messages = 10; }
+	else { $number_messages = get_option('wp_admin_blog_number_messages'); }
+	// Auto reply
+	if ( !get_option('wp_admin_blog_auto_reply') ) { $auto_reply = 'false'; }
+	else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
 	// Handles limits 
 	if (isset($_GET[limit])) {
 		$message_limit = (int)$_GET[limit];
@@ -457,7 +531,8 @@ function wp_admin_blog_page() {
         	<td><div style="padding:5px;">
              <?php
 			    // number of tags
-				$limit = 50;
+				if ( !get_option('wp_admin_blog_number_tags') ) { $limit = 50; }
+				else { $limit = get_option('wp_admin_blog_number_tags'); }
 				// font sizes
 				$maxsize = 35;
 				$minsize = 11;
@@ -703,7 +778,7 @@ function wp_admin_blog_page() {
 					if ($post->user == $user) {
 						$edit_button = $edit_button . ' | <a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;">' . __('Edit','wp_admin_blog') . '</a> | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a>';
 					}
-					$edit_button = $edit_button . ' | <a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;">' . __('Reply','wp_admin_blog') . '</a>';
+					$edit_button = $edit_button . ' | <a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;">' . __('Reply','wp_admin_blog') . '</a>';
 					// Message date headlines
 					if ($message_date != $message_date_old) {
 						echo '<tr><td colspan="2"><strong>' . $message_date . '</strong></td></tr>';
@@ -738,12 +813,10 @@ function wp_admin_blog_page() {
  * Add scripts ans stylesheets
 */ 
 function wp_admin_blog_header() {
-	// if ( eregi('wp-admin-microblog', $_GET[page]) ) {
-		wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
-		wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
-		wp_enqueue_style('wp_admin_blog_css');
-		wp_enqueue_script('wp_admin_blog');
-	//}
+	wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
+	wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
+	wp_enqueue_style('wp_admin_blog_css');
+	wp_enqueue_script('wp_admin_blog');
 }
 /*
  * Installer
@@ -785,8 +858,8 @@ function wp_admin_blog_install () {
 					   ) $charset_collate;";
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');		
 		dbDelta($sql);
-	 }
-	 // Tag table
+	}
+	// Tag table
 	$table_name = $admin_blog_tags;
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		$sql = "CREATE TABLE " . $admin_blog_tags. " (
@@ -796,8 +869,8 @@ function wp_admin_blog_install () {
 					   ) $charset_collate;";
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');			
 		dbDelta($sql);
-	 }
-	 // Relation
+	}
+	// Relation
 	$table_name = $admin_blog_relations;
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		$sql = "CREATE TABLE " . $admin_blog_relations. " (
@@ -808,7 +881,16 @@ function wp_admin_blog_install () {
 					   ) $charset_collate;";
 		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');			
 		dbDelta($sql);
-	 }
+	}
+	if ( !get_option('wp_admin_blog_number_tags') ) {
+		add_option('wp_admin_blog_number_tags', '50', '', 'no');
+	}
+	if ( !get_option('wp_admin_blog_number_messages') ) {
+		add_option('wp_admin_blog_number_messages', '10', '', 'no');
+	}
+	if ( !get_option('wp_admin_blog_auto_reply') ) {
+		add_option('wp_admin_blog_auto_reply', 'false', '', 'no');
+	}
 }
 // load language support
 function wp_admin_blog_language_support() {

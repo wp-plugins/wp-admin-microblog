@@ -55,7 +55,7 @@ function editMessage(post_ID) {
 		}
     }
 // for editing messages
-function replyMessage(post_ID, parent_ID) {
+function replyMessage(post_ID, parent_ID, reply, author) {
 		var parent = "wp_admin_blog_message_" + post_ID;
 		var textarea = "wp_admin_blog_edit_text";
 		
@@ -76,6 +76,9 @@ function replyMessage(post_ID, parent_ID) {
 			textarea_neu.name = textarea;
 			textarea_neu.rows = 4;
 			textarea_neu.style.width = "100%";
+			if (reply == "true") {
+				textarea_neu.value = "@" + author + " ";
+			}
 			// create button
 			var save_button = document.createElement('input');
 			save_button.name = "wp_admin_blog_reply_message_submit";
