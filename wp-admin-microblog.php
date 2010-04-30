@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.6.3
+Version: 0.6.4
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -169,7 +169,13 @@ function wp_admin_blog_replace_url($text) {
 	if ( preg_match_all("((http://|https://|ftp://|mailto:|news:)[^ ]+)", $text, $match) ) {
 		$prefix = '#(^|[^"=]{1})(http://|https://|ftp://|mailto:|news:)([^\s]+)([\s\n]|$)#sm';
 		for ($x = 0; $x < count($match[0]); $x++) {
-			$text = preg_replace($prefix, ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $match[0][$x] . '</a> ', $text); 
+			$link_text = $match[0][$x];
+			$length = strlen($link_text);
+			$link_text = substr($link_text, 0 , 50);
+			if ($length > 50) {
+				$link_text = $link_text . '[...]';
+			}
+			$text = preg_replace($prefix, ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $link_text . '</a> ', $text); 
 		}
 	}
 	return $text;
@@ -556,8 +562,12 @@ function wp_admin_blog_page() {
 						if ($min == 1) {
 							$min = 0;
 						}
+						$div = $max - $min;
+						if ($div == 0) {
+							$div = 1;
+						}
 						// Formula: max. font size*(current number - min number)/ (max number - min number)
-						$size = floor(($maxsize*($tagcloud['tagPeak']-$min)/($max-$min)));
+						$size = floor(($maxsize*($tagcloud['tagPeak']-$min)/($div)));
 						// offset for font size
 						if ($size < $minsize) {
 							$size = $minsize ;
