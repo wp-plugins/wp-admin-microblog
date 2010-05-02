@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.6.4
+Version: 0.9.0
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
@@ -53,7 +53,7 @@ function wp_admin_blog_add_menu_settings() {
  * @param $type - integer, string (default)
 */
 function wp_admin_blog_sec_var($var, $type = 'string') {
-	$var = htmlentities(utf8_decode($var));
+	$var = htmlspecialchars($var);
 	if ($type == 'string') { 
 		/* precipitate problems with double slashes
 		if (get_magic_quotes_gpc() == 0) {
@@ -118,7 +118,7 @@ function wp_admin_blog_add_message ($content, $user, $tags, $parent) {
 		}
 	}
 	// Send message
-	wp_admin_blog_find_user($content);
+	wp_admin_blog_find_user($content, $user);
 }
 /* Delete message
  * @param $delete - Post ID
@@ -204,17 +204,16 @@ function wp_admin_blog_replace_bbcode($text, $mode = 'replace') {
 /* Find users in string an send mail
  * @param $text - string
 */ 
-function wp_admin_blog_find_user($text) {
+function wp_admin_blog_find_user($text, $user) {
 	global $wpdb;
 	global $admin_blog_posts;
 	
+	$user = get_userdata($user);
 	$text = $text . ' ';
 	$text = wp_admin_blog_replace_bbcode($text, 'delete');
 	$text = str_replace("<br />","",$text);
-	$text = $text . chr(13). chr(10) . chr(13). chr(10) . __('Login in the blog under the following address to create a reply: ','wp_admin_blog') . wp_login_url();
-	if ( get_settings('blog_charset') == "UTF-8" ) {
-		$text = utf8_encode(html_entity_decode($text));
-	}
+	$text = __('Author:','wp_admin_blog') . ' ' . $user->display_name . chr(13) . chr(10) . chr(13) . chr(10) . $text;
+	$text = $text . chr(13) . chr(10) . '________________________' . chr(13) . chr(10) . __('Login under the following address to create a reply:','wp_admin_blog') . ' ' . wp_login_url();
 	
 	$sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
 	$users = $wpdb->get_results($sql);
@@ -296,7 +295,7 @@ function wp_admin_blog_widget_function() {
 		wp_admin_blog_del_message($delete);
 	}
 	echo '<form method="post" name="wp_admin_blog_dashboard_widget" id="wp_admin_blog_dashboard_widget" action="' .  $PHP_SELF . '">';
-	echo '<table border="0" cellpadding="0" cellspacing="0">';
+	echo '<table border="0" cellpadding="0" cellspacing="0" width="100%">';
 	$sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY post_ID DESC LIMIT 0, 5";
 	$rows = $wpdb->get_results($sql);
 	$sql = "SELECT COUNT(post_parent) AS gesamt, post_parent FROM " . $admin_blog_posts . " GROUP BY post_parent";
@@ -328,12 +327,12 @@ function wp_admin_blog_widget_function() {
 		}
 		// Message Menu
 		if ($count_rep != 0) {
-			$edit_button = ' | ' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '';
+			$edit_button2 = ' | ' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '';
 		}
 		if ($post->user == $user) {
-			$edit_button = $edit_button . ' | <a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;">' . __('Edit','wp_admin_blog') . '</a> | <a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a>';
+			$edit_button = $edit_button . '<a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | <a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
 		}
-		$edit_button = $edit_button . ' | <a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;">' . __('Reply','wp_admin_blog') . '</a>';
+		$edit_button = $edit_button . '<a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
 		// Handles german date format
 		if ( __('en','wp_admin_blog') == 'de') {
 			$message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
@@ -343,8 +342,9 @@ function wp_admin_blog_widget_function() {
 		}
 		echo '<tr>';
 		echo '<td style="border-bottom:1px solid rgb(223 ,223,223);">';
-		echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' ' . $time[0][3]. ':' . $time[0][4] . ' | ' . $user_info->display_name . '' . $edit_button . '</p>';
-		echo '<p>' . $message_text . '</p></div>';
+		echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' | ' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>';
+		echo '<p>' . $message_text . '</p>';
+		echo '<div class="wam-row-actions" style="font-size:11px; padding: 0 0 10px 0; margin:0;">' . $edit_button . '</div></div>';
 		echo '<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
 		echo '</td>';
 		echo '</tr>';
@@ -493,14 +493,14 @@ function wp_admin_blog_page() {
 	?>
     <div class="wrap" style="max-width:1200px; min-width:780px; width:96%; padding-top:10px;">
     
-    <h2><?php _e('Microblog','wp_admin_blog');?><span class="tp_break">|</span> <small><a onclick="wp_admin_blog_showhide('hilfe_anzeigen')" style="cursor:pointer;"><?php _e('Help','wp_admin_blog'); ?></a></small></h2>
- <div id="hilfe_anzeigen">
-    	<h3 class="teachpress_help"><?php _e('Help','wp_admin_blog'); ?></h3>
-        <p class="hilfe_headline"><?php _e('E-mail notification','wp_admin_blog'); ?></p>
-        <p class="hilfe_text"><?php _e('If you will send your message as an E-Mail to any user, so write @username (example: @admin)','wp_admin_blog'); ?></p>
-        <p class="hilfe_headline"><?php _e('Text formatting','wp_admin_blog'); ?></p>
-        <p class="hilfe_text"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
-        <p class="hilfe_close"><strong><a onclick="wp_admin_blog_showhide('hilfe_anzeigen')" style="cursor:pointer;"><?php _e('close','wp_admin_blog'); ?></a></strong></p>
+    <h2><?php _e('Microblog','wp_admin_blog');?><span class="tp_break">|</span> <small><a onclick="wp_admin_blog_showhide('wam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('Help','wp_admin_blog'); ?></a></small></h2>
+ <div id="wam_hilfe_anzeigen">
+    	<h3 class="wam_help"><?php _e('Help','wp_admin_blog'); ?></h3>
+        <p class="wam_help_h"><?php _e('E-mail notification','wp_admin_blog'); ?></p>
+        <p class="wam_help_t"><?php _e('If you will send your message as an E-Mail to any user, so write @username (example: @admin)','wp_admin_blog'); ?></p>
+        <p class="wam_help_h"><?php _e('Text formatting','wp_admin_blog'); ?></p>
+        <p class="wam_help_t"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
+        <p class="wam_help_c"><strong><a onclick="wp_admin_blog_showhide('wam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('close','wp_admin_blog'); ?></a></strong></p>
     </div>
     <div style="width:31%; float:right; padding-right:1%;">
     <form name="blog_selections" method="get">
@@ -783,23 +783,27 @@ function wp_admin_blog_page() {
 					}
 					// Message Menu
 					if ($count_rep != 0) {
-						$edit_button = ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;rpl=' . $rpl . '" class="replies">' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '</a>';
+						$edit_button2 = ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;rpl=' . $rpl . '" class="wam_replies">' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '</a>';
 					}
 					if ($post->user == $user) {
-						$edit_button = $edit_button . ' | <a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;">' . __('Edit','wp_admin_blog') . '</a> | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a>';
+						$edit_button = $edit_button . '<a onclick="javascript:editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
 					}
-					$edit_button = $edit_button . ' | <a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;">' . __('Reply','wp_admin_blog') . '</a>';
+					$edit_button = $edit_button . '<a onclick="javascript:replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
 					// Message date headlines
 					if ($message_date != $message_date_old) {
 						echo '<tr><td colspan="2"><strong>' . $message_date . '</strong></td></tr>';
 					}
 					// print messages
 					echo '<tr>';
-					echo '<td style="padding:10px; width:60px;"><span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 45) . '</span></td>';
-					echo '<td style="padding:10px;">';
-					echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button . '</p>';
-					echo '<p>' . $message_text . '</p></div>';
-                    echo '<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
+					echo '<td style="padding:10px; width:60px;">
+							<span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 50) . '</span></td>';
+					echo '<td style="padding:10px;">
+							<div id="wp_admin_blog_message_' . $post->post_ID . '">
+								<p style="color:#AAAAAA;">' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>
+								<p>' . $message_text . '</p>
+								<div class="wam-row-actions">' . $edit_button . '</div>
+							</div>
+							<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
 					echo '</td>';
 					echo '</tr>';
 					$message_date_old = $message_date;

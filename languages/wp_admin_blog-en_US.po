@@ -25,271 +25,289 @@ msgid "Blog"
 msgstr "Blog"
 
 #: wp-admin-microblog.php:45
-#: wp-admin-microblog.php:490
+#: wp-admin-microblog.php:496
 #@ wp_admin_blog
 msgid "Microblog"
 msgstr "Microblog"
 
 #: wp-admin-microblog.php:48
-#: wp-admin-microblog.php:381
+#: wp-admin-microblog.php:387
 #@ wp_admin_blog
 msgid "WP Admin Microblog Settings"
 msgstr "WP Admin Microblog Settings"
 
 #: wp-admin-microblog.php:89
-#: wp-admin-microblog.php:624
+#: wp-admin-microblog.php:634
 #@ wp_admin_blog
 msgid "Tags (seperate with comma)"
 msgstr "Tags (seperate with comma)"
 
-#: wp-admin-microblog.php:221
+#: wp-admin-microblog.php:226
 #@ wp_admin_blog
 msgid "New message in admin micoblog"
 msgstr "New message in admin micoblog"
 
-#: wp-admin-microblog.php:413
+#: wp-admin-microblog.php:419
 #@ wp_admin_blog
 msgid "Access for"
 msgstr "Access for"
 
-#: wp-admin-microblog.php:432
+#: wp-admin-microblog.php:438
 #@ wp_admin_blog
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: wp-admin-microblog.php:490
-#: wp-admin-microblog.php:492
+#: wp-admin-microblog.php:496
+#: wp-admin-microblog.php:498
 #@ wp_admin_blog
 msgid "Help"
 msgstr "Help"
 
-#: wp-admin-microblog.php:494
+#: wp-admin-microblog.php:500
 #@ wp_admin_blog
 msgid "If you will send your message as an E-Mail to any user, so write @username (example: @admin)"
 msgstr "If you will send your message as an E-Mail to any user, so write @username (example: @admin)"
 
-#: wp-admin-microblog.php:497
+#: wp-admin-microblog.php:503
 #@ wp_admin_blog
 msgid "close"
 msgstr "close"
 
-#: wp-admin-microblog.php:509
+#: wp-admin-microblog.php:515
 #@ wp_admin_blog
 msgid "Delete the search from filter"
 msgstr "Delete the search from filter"
 
-#: wp-admin-microblog.php:509
-#: wp-admin-microblog.php:512
+#: wp-admin-microblog.php:515
+#: wp-admin-microblog.php:518
 #@ wp_admin_blog
 msgid "Search"
 msgstr "Search"
 
-#: wp-admin-microblog.php:518
+#: wp-admin-microblog.php:524
 #@ wp_admin_blog
 msgid "Search word"
 msgstr "Search word"
 
-#: wp-admin-microblog.php:519
+#: wp-admin-microblog.php:525
 #@ wp_admin_blog
 msgid "Go"
 msgstr "Go"
 
-#: wp-admin-microblog.php:528
+#: wp-admin-microblog.php:534
 #@ wp_admin_blog
 msgid "Tags"
 msgstr "Tags"
 
-#: wp-admin-microblog.php:567
+#: wp-admin-microblog.php:577
 #@ wp_admin_blog
 msgid "Delete the tag from filter"
 msgstr "Delete the tag from filter"
 
-#: wp-admin-microblog.php:570
+#: wp-admin-microblog.php:580
 #@ wp_admin_blog
 msgid "Show related messages"
 msgstr "Show related messages"
 
-#: wp-admin-microblog.php:586
+#: wp-admin-microblog.php:596
 #@ wp_admin_blog
 msgid "User"
 msgstr "User"
 
-#: wp-admin-microblog.php:597
+#: wp-admin-microblog.php:607
 #@ wp_admin_blog
 msgid "Delete user as filter"
 msgstr "Delete user as filter"
 
-#: wp-admin-microblog.php:617
+#: wp-admin-microblog.php:627
 #@ wp_admin_blog
 msgid "Your Message"
 msgstr "Your Message"
 
-#: wp-admin-microblog.php:625
+#: wp-admin-microblog.php:635
 #@ wp_admin_blog
 msgid "Send"
 msgstr "Send"
 
-#: wp-admin-microblog.php:639
+#: wp-admin-microblog.php:649
 #@ wp_admin_blog
 msgid "Search Results"
 msgstr "Search Results"
 
-#: wp-admin-microblog.php:639
+#: wp-admin-microblog.php:649
 #@ wp_admin_blog
 msgid "Show all"
 msgstr "Show all"
 
-#: wp-admin-microblog.php:642
+#: wp-admin-microblog.php:652
 #@ wp_admin_blog
 msgid "Messages"
 msgstr "Messages"
 
-#: wp-admin-microblog.php:691
+#: wp-admin-microblog.php:701
 #@ wp_admin_blog
 msgid "Sorry, no entries mached your criteria"
 msgstr "Sorry, no entries mached your criteria"
 
-#: wp-admin-microblog.php:699
+#: wp-admin-microblog.php:709
 #@ wp_admin_blog
 msgid "previous page"
 msgstr "previous page"
 
-#: wp-admin-microblog.php:707
-#: wp-admin-microblog.php:720
+#: wp-admin-microblog.php:717
+#: wp-admin-microblog.php:730
 #@ wp_admin_blog
 msgid "Page"
 msgstr "Page"
 
-#: wp-admin-microblog.php:730
+#: wp-admin-microblog.php:740
 #@ wp_admin_blog
 msgid "next page"
 msgstr "next page"
 
-#: wp-admin-microblog.php:332
-#: wp-admin-microblog.php:764
+#: wp-admin-microblog.php:337
+#: wp-admin-microblog.php:774
 #@ wp_admin_blog
 msgid "en"
 msgstr "en"
 
-#: wp-admin-microblog.php:325
-#: wp-admin-microblog.php:776
+#: wp-admin-microblog.php:330
+#: wp-admin-microblog.php:786
 #@ wp_admin_blog
 msgid "Replies"
 msgstr "Replies"
 
-#: wp-admin-microblog.php:328
-#: wp-admin-microblog.php:779
+#: wp-admin-microblog.php:333
+#: wp-admin-microblog.php:789
 #@ wp_admin_blog
 msgid "Edit"
 msgstr "Edit"
 
-#: wp-admin-microblog.php:328
-#: wp-admin-microblog.php:779
+#: wp-admin-microblog.php:333
+#: wp-admin-microblog.php:789
 #@ wp_admin_blog
 msgid "Click to delete this message"
 msgstr "Click to delete this message"
 
-#: wp-admin-microblog.php:328
-#: wp-admin-microblog.php:779
+#: wp-admin-microblog.php:333
+#: wp-admin-microblog.php:789
 #@ wp_admin_blog
 msgid "Delete"
 msgstr "Delete"
 
-#: wp-admin-microblog.php:330
-#: wp-admin-microblog.php:781
+#: wp-admin-microblog.php:335
+#: wp-admin-microblog.php:791
 #@ wp_admin_blog
 msgid "Reply"
 msgstr "Reply"
 
-#: wp-admin-microblog.php:790
+#: wp-admin-microblog.php:345
+#: wp-admin-microblog.php:802
 #@ wp_admin_blog
 msgid "by"
 msgstr "by"
 
-#: wp-admin-microblog.php:575
+#: wp-admin-microblog.php:585
 #@ wp_admin_blog
 msgid "No tags available"
 msgstr "No tags available"
 
-#: wp-admin-microblog.php:493
+#: wp-admin-microblog.php:499
 #@ wp_admin_blog
 msgid "E-mail notification"
 msgstr "E-mail notification"
 
-#: wp-admin-microblog.php:495
+#: wp-admin-microblog.php:501
 #@ wp_admin_blog
 msgid "Text formatting"
 msgstr "Text formatting"
 
-#: wp-admin-microblog.php:496
+#: wp-admin-microblog.php:502
 #@ wp_admin_blog
 msgid "You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible."
 msgstr "You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible."
 
-#: wp-admin-microblog.php:352
+#: wp-admin-microblog.php:358
 #@ wp_admin_blog
 msgid "Microblog - Last Messages"
 msgstr "Microblog - Last Messages"
 
-#: wp-admin-microblog.php:384
+#: wp-admin-microblog.php:390
 #@ wp_admin_blog
 msgid "General"
 msgstr "General"
 
-#: wp-admin-microblog.php:387
+#: wp-admin-microblog.php:393
 #@ wp_admin_blog
 msgid "Number of tags"
 msgstr "Number of tags"
 
-#: wp-admin-microblog.php:389
+#: wp-admin-microblog.php:395
 #@ wp_admin_blog
 msgid "Default: 50"
 msgstr "Default: 50"
 
-#: wp-admin-microblog.php:392
+#: wp-admin-microblog.php:398
 #@ wp_admin_blog
 msgid "Number of messages per page"
 msgstr "Number of messages per page"
 
-#: wp-admin-microblog.php:394
+#: wp-admin-microblog.php:400
 #@ wp_admin_blog
 msgid "Default: 10"
 msgstr "Default: 10"
 
-#: wp-admin-microblog.php:397
+#: wp-admin-microblog.php:403
 #@ wp_admin_blog
 msgid "Auto notification"
 msgstr "Auto notification"
 
-#: wp-admin-microblog.php:401
-#: wp-admin-microblog.php:405
+#: wp-admin-microblog.php:407
+#: wp-admin-microblog.php:411
 #@ wp_admin_blog
 msgid "yes"
 msgstr "yes"
 
-#: wp-admin-microblog.php:402
-#: wp-admin-microblog.php:406
+#: wp-admin-microblog.php:408
+#: wp-admin-microblog.php:412
 #@ wp_admin_blog
 msgid "no"
 msgstr "no"
 
-#: wp-admin-microblog.php:410
+#: wp-admin-microblog.php:416
 #@ wp_admin_blog
 msgid "Activate this option and the plugin insert in every reply the string for the auto e-mail notification"
 msgstr "Activate this option and the plugin insert in every reply the string for the auto e-mail notification"
 
-#: wp-admin-microblog.php:428
+#: wp-admin-microblog.php:434
 #@ wp_admin_blog
 msgid "Select which userroles have access to WP Admin Microblog."
 msgstr "Select which userroles have access to WP Admin Microblog."
 
-#: wp-admin-microblog.php:428
+#: wp-admin-microblog.php:434
 #@ wp_admin_blog
 msgid "Use &lt;Ctrl&gt; key to select multiple roles."
 msgstr "Use &lt;Ctrl&gt; key to select multiple roles."
 
-#: wp-admin-microblog.php:208
+#: wp-admin-microblog.php:333
+#: wp-admin-microblog.php:789
 #@ wp_admin_blog
-msgid "Login in the blog under the following address to create a reply: "
-msgstr "Login in the blog under the following address to create a reply: "
+msgid "Edit this message"
+msgstr "Edit this message"
+
+#: wp-admin-microblog.php:335
+#: wp-admin-microblog.php:791
+#@ wp_admin_blog
+msgid "Write a reply"
+msgstr "Write a reply"
+
+#: wp-admin-microblog.php:215
+#@ wp_admin_blog
+msgid "Author:"
+msgstr "Author:"
+
+#: wp-admin-microblog.php:216
+#@ wp_admin_blog
+msgid "Login under the following address to create a reply:"
+msgstr "Login under the following address to create a reply:"
 

@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.6.4
+Stable tag: 0.9.0
 
 WP Admin Microblog adds a seperate microblog in your WordPress backend.
 
@@ -45,8 +45,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 == Screenshots ==
 
-1. The interface
-2. The dashboard widget
+1. Screenshot Main interface
+2. Screenshot Dashboard widget
 
 == Frequently Asked Questions ==
 
@@ -57,6 +57,10 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 0.9.0 =
+* Changed: Some style improvements :-)
+* Bugfix: Fixed some problems with the e-mail notification
+* Bugfix: Fixed an utf-8 problem
 = 0.6.4 =
 * New: Cut urls with more than 50 chars
 * Bugfix: Fixed a possible division across zero in the tag cloud
