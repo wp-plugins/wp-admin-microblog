@@ -1,5 +1,5 @@
 // for show/hide buttons
-function wp_admin_blog_showhide(where) {
+function wpam_showhide(where) {
      if (document.getElementById(where).style.display != "block") {
       document.getElementById(where).style.display = "block";
      }
@@ -8,7 +8,7 @@ function wp_admin_blog_showhide(where) {
      }
 }
 // for editing messages
-function editMessage(post_ID) {
+function wpam_editMessage(post_ID) {
 		var parent = "wp_admin_blog_message_" + post_ID;
 		var message_text_field = "wp_admin_blog_message_text_" + post_ID;
 		var textarea = "wp_admin_blog_edit_text";
@@ -55,7 +55,7 @@ function editMessage(post_ID) {
 		}
     }
 // for editing messages
-function replyMessage(post_ID, parent_ID, reply, author) {
+function wpam_replyMessage(post_ID, parent_ID, reply, author) {
 		var parent = "wp_admin_blog_message_" + post_ID;
 		var textarea = "wp_admin_blog_edit_text";
 		
@@ -98,3 +98,12 @@ function replyMessage(post_ID, parent_ID, reply, author) {
 			document.getElementById("div_reply").appendChild(cancel_button);
 		}
     }
+// for showing the title field	
+function wpamTitle () {
+	if (document.getElementById("span_headline").style.display != "block") {
+      document.getElementById("span_headline").style.display = "block";
+    }
+    else {
+      document.getElementById("span_headline").style.display = "none";
+    }
+}
