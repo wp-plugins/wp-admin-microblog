@@ -98,12 +98,3 @@ function wpam_replyMessage(post_ID, parent_ID, reply, author) {
 			document.getElementById("div_reply").appendChild(cancel_button);
 		}
     }
-// for showing the title field	
-function wpamTitle () {
-	if (document.getElementById("span_headline").style.display != "block") {
-      document.getElementById("span_headline").style.display = "block";
-    }
-    else {
-      document.getElementById("span_headline").style.display = "none";
-    }
-}
