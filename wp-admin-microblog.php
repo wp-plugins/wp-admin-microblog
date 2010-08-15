@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://www.mtrv.kilu.de/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.1
+Version: 0.9.2
 Author: Michael Winkler
 Author URI: http://www.mtrv.kilu.de/
 Min WP Version: 2.8
-Max WP Version: 2.9.2
+Max WP Version: 3.0.1
 */
 
 /*
@@ -146,7 +146,7 @@ function wp_admin_blog_update_message($post_ID, $text) {
 /* Add a message as WordPress blog post
  *
 */ 
-function wp_admin_blog_add_as_wp_post ($content, $title, $author) {
+function wp_admin_blog_add_as_wp_post ($content, $title, $author, $tags) {
 	if ($title == '') {
 		$title = __('Short message','wp_admin_blog');
 	}
@@ -155,6 +155,14 @@ function wp_admin_blog_add_as_wp_post ($content, $title, $author) {
  	$message['post_content'] = $content;
  	$message['post_status'] = 'publish';
  	$message['post_author'] = $author;
+	if ($tags != '') {
+		$array = explode(",",$tags);
+		foreach($array as $element) {
+			$element = trim($element);
+			$elements = $elements . $element . ', ';
+		}
+		$message['tags_input'] = substr($elements, 0, -2);
+	}	
 	wp_insert_post( $message );
 }
 
@@ -321,6 +329,7 @@ function wp_admin_blog_widget_function() {
 		$count_rep = 0;
 		$rpl = 0;
 		$str = "'";
+		$today = false;
 		$time = wp_admin_blog_datumsplit($post->date);
 		$message_text = wp_admin_blog_replace_url($post->text);
 		$message_text = wp_admin_blog_replace_bbcode($message_text);
@@ -351,9 +360,18 @@ function wp_admin_blog_widget_function() {
 		// Handles german date format
 		if ( __('en','wp_admin_blog') == 'de') {
 			$message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
+			if ( date('d.m.Y') == $message_date ) {
+				$today = true;
+			}
 		}
 		else {
 			$message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
+			if ( date('Y-m-d') == $message_date ) {
+				$today = true;
+			}
+		}
+		if ($today == true) {
+			$message_date = __('Today', 'wp_admin_blog');
 		}
 		echo '<tr>';
 		echo '<td style="border-bottom:1px solid rgb(223 ,223,223);">';
@@ -497,7 +515,7 @@ function wp_admin_blog_page() {
 	if (isset($_POST[send])) {
 		wp_admin_blog_add_message($content, $user, $tags, 0);
 		if ($as_wp_post == 'true') {
-			wp_admin_blog_add_as_wp_post($content, $headline, $user);
+			wp_admin_blog_add_as_wp_post($content, $headline, $user, $tags);
 		}
 		$content = "";
 	}	
@@ -542,7 +560,7 @@ function wp_admin_blog_page() {
         <tr>
         	<td>
             <input name="search" type="text"  value="<?php if (isset($_GET[search]) && $_GET[search] != "") { echo $search; } else { _e('Search word', 'wp_admin_blog'); }?>" onblur="if(this.value=='') this.value='<?php _e('Search word', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Search word', 'wp_admin_blog'); ?>') this.value='';"/>
-            <input name="search_init" type="submit" value="<?php _e('Go', 'wp_admin_blog');?>"/>
+            <input name="search_init" type="submit" class="button-secondary" value="<?php _e('Go', 'wp_admin_blog');?>"/>
             </td>
         </tr>    
     </thead>
@@ -654,7 +672,7 @@ function wp_admin_blog_page() {
             <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate with comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate with comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate with comma)', 'wp_admin_blog'); ?>') this.value='';"></p>
             <table style="width:100%;">
             	<tr>
-                	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpamTitle();" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">--> <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" /></span></td>
+                	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" /></span></td>
             		<td style="text-align:right; border-bottom-width:0px;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" onclick=""></td>
             	</tr>
             </table>
@@ -780,6 +798,7 @@ function wp_admin_blog_page() {
 					$count_rep = 0;
 					$rpl = 0;
 					$str = "'";
+					$today = false;
 					$time = wp_admin_blog_datumsplit($post->date);
 					$message_text = wp_admin_blog_replace_url($post->text);
 					$message_text = wp_admin_blog_replace_bbcode($message_text);
@@ -798,9 +817,15 @@ function wp_admin_blog_page() {
 					// Handles german date format
 					if ( __('en','wp_admin_blog') == 'de') {
 						$message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
+						if ( date('d.m.Y') == $message_date ) {
+							$today = true;
+						}
 					}
 					else {
 						$message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
+						if ( date('Y-m-d') == $message_date ) {
+							$today = true;
+						}
 					}
 					// Handles post parent
 					if ($post->post_parent == '0') {
@@ -816,7 +841,12 @@ function wp_admin_blog_page() {
 					$edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
 					// Message date headlines
 					if ($message_date != $message_date_old) {
-						echo '<tr><td colspan="2"><strong>' . $message_date . '</strong></td></tr>';
+						if ($today == true) {
+							echo '<tr><td colspan="2"><strong>' . __('Today','wp_admin_blog') . '</strong></td></tr>';
+						}
+						else {
+							echo '<tr><td colspan="2"><strong>' . $message_date . '</strong></td></tr>';
+						}
 					}
 					// print messages
 					echo '<tr>';
