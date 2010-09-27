@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WP Admin Microblog
-Plugin URI: http://www.mtrv.kilu.de/microblog/
+Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.3
+Version: 0.9.4
 Author: Michael Winkler
-Author URI: http://www.mtrv.kilu.de/
+Author URI: http://mtrv.wordpress.com/
 Min WP Version: 2.8
 Max WP Version: 3.0.1
 */
@@ -86,7 +86,7 @@ function wp_admin_blog_add_message ($content, $user, $tags, $parent) {
 		foreach($array as $element) {
 			// Check if tag is in database
 			$element = trim($element);
-			if ($element != "" && $element != __('Tags (seperate with comma)', 'wp_admin_blog')) {
+			if ($element != "" && $element != __('Tags (seperate by comma)', 'wp_admin_blog')) {
 				$abfrage = "SELECT tag_ID FROM " . $admin_blog_tags . " WHERE name = '$element'";
 				$check = $wpdb->query($abfrage);
 				// if not, then insert tag
@@ -304,10 +304,21 @@ function wp_admin_blog_widget_function() {
 	global $admin_blog_relations;
 	get_currentuserinfo();
 	$user = $current_user->ID;
+	$new['text'] = wp_admin_blog_sec_var($_POST[wpam_nm_text]);
+	$new['tags'] = wp_admin_blog_sec_var($_POST[wpam_nm_tags]);
+	$new['headline'] = wp_admin_blog_sec_var($_POST[wpam_nm_headline]);
 	$text = wp_admin_blog_sec_var($_POST[wp_admin_blog_edit_text]);
 	$edit_message_ID = wp_admin_blog_sec_var($_POST[wp_admin_blog_message_ID], 'integer');
 	$parent_ID = wp_admin_blog_sec_var($_POST[wp_admin_blog_parent_ID], 'integer');
 	$delete = wp_admin_blog_sec_var($_GET[wp_admin_blog_delete], 'integer');
+	$str = "'";
+	if (isset($_POST[wpam_nm_submit])) {
+		wp_admin_blog_add_message($new['text'], $user, $new['tags'], 0);
+		if ($_POST[wpam_as_wp_post] == 'true') {
+			wp_admin_blog_add_as_wp_post($new['text'], $new['headline'], $user, $new['tags']);
+		}
+		$content = "";
+	}
 	if (isset($_POST[wp_admin_blog_edit_message_submit])) {
 		wp_admin_blog_update_message($edit_message_ID, $text);
 	}
@@ -318,6 +329,18 @@ function wp_admin_blog_widget_function() {
 		wp_admin_blog_del_message($delete);
 	}
 	echo '<form method="post" name="wp_admin_blog_dashboard_widget" id="wp_admin_blog_dashboard_widget" action="' .  $PHP_SELF . '">';
+	
+	echo '<div id="wpam_new_message" style="display:none;">';
+	echo '<textarea name="wpam_nm_text" id="wpam_nm_text" cols="70" rows="4" style="width:100%;"></textarea>';
+    echo '<input name="wpam_nm_tags" id="wpam_nm_tags" type="text" style="width:100%;" value="' . __('Tags (seperate by comma)', 'wp_admin_blog') . '" onblur="if(this.value==' . $str . $str . ') this.value=' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ';" onfocus="if(this.value==' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ') this.value=' . $str . $str . ';" />';
+	echo '<table style="width:100%; border-bottom:1px solid rgb(223 ,223,223); padding:10px;">';
+    echo '<tr>';
+    echo '<td style="font-size:11px;"><input name="wpam_as_wp_post" id="wpam_as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide(' . $str . 'wpam_as_wp_post_title' . $str .')" /> <label for="wpam_as_wp_post">' . __('as WordPress blog post', 'wp_admin_blog') . '</label> <span style="display:none;" id="wpam_as_wp_post_title">&rarr; <label for="wpam_nm_headline">' . __('Title', 'wp_admin_blog') . ' </label><input name="wpam_nm_headline" id="wpam_nm_headline" type="text" style="width:80%;" /></span></td>';
+    echo '<td style="text-align:right;"><input type="submit" name="wpam_nm_submit" id="wpam_nm_submit" class="button-primary" value="' . __('Send', 'wp_admin_blog') . '" /></td>';
+    echo '</tr>';
+    echo '</table>';
+	echo '</div>';
+    
 	echo '<table border="0" cellpadding="0" cellspacing="0" width="100%">';
 	$sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY post_ID DESC LIMIT 0, 5";
 	$rows = $wpdb->get_results($sql);
@@ -326,6 +349,7 @@ function wp_admin_blog_widget_function() {
 	foreach ($rows as $post) {
 		$user_info = get_userdata($post->user);
 		$edit_button = '';
+		$edit_button2 = '';
 		$count_rep = 0;
 		$rpl = 0;
 		$str = "'";
@@ -357,25 +381,10 @@ function wp_admin_blog_widget_function() {
 			$edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | <a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
 		}
 		$edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
-		// Handles german date format
-		if ( __('en','wp_admin_blog') == 'de') {
-			$message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
-			if ( date('d.m.Y') == $message_date ) {
-				$today = true;
-			}
-		}
-		else {
-			$message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
-			if ( date('Y-m-d') == $message_date ) {
-				$today = true;
-			}
-		}
-		if ($today == true) {
-			$message_date = __('Today', 'wp_admin_blog');
-		}
+		$message_date = human_time_diff( mktime($time[0][3], $time[0][4], $time[0][5], $time[0][1], $time[0][2], $time[0][0] ), current_time('timestamp') ) . ' ' . __( 'ago', 'wp_admin_blog' );
 		echo '<tr>';
 		echo '<td style="border-bottom:1px solid rgb(223 ,223,223);">';
-		echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' | ' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>';
+		echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' | ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>';
 		echo '<p>' . $message_text . '</p>';
 		echo '<div class="wam-row-actions" style="font-size:11px; padding: 0 0 10px 0; margin:0;">' . $edit_button . '</div></div>';
 		echo '<input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
@@ -388,7 +397,9 @@ function wp_admin_blog_widget_function() {
 
 function wp_admin_blog_add_widgets() {
 	if ( current_user_can( 'use_wp_admin_microblog' ) ) {
-		wp_add_dashboard_widget('wp_admin_blog_dashboard_widget', '' . __('Microblog - Last Messages','wp_admin_blog') . '', 'wp_admin_blog_widget_function');
+		$str = "'";
+		$title =  __('Microblog','wp_admin_blog') . ' <a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none;">' . __('New','wp_admin_blog') . '</a>';
+		wp_add_dashboard_widget('wp_admin_blog_dashboard_widget', '' . $title . '', 'wp_admin_blog_widget_function');
 	}
 }
 
@@ -669,11 +680,11 @@ function wp_admin_blog_page() {
             <div id="postdiv" class="postarea">
             <textarea name="content" id="content" style="width:100%;" rows="4"></textarea>
             </div>
-            <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate with comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate with comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate with comma)', 'wp_admin_blog'); ?>') this.value='';"></p>
+            <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate by comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>') this.value='';" /></p>
             <table style="width:100%;">
             	<tr>
-                	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" /></span></td>
-            		<td style="text-align:right; border-bottom-width:0px;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" onclick=""></td>
+                	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" style="width:80%;" /></span></td>
+            		<td style="text-align:right; border-bottom-width:0px;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" /></td>
             	</tr>
             </table>
     		</td>
@@ -795,6 +806,7 @@ function wp_admin_blog_page() {
 				foreach ($post as $post) {
 					$user_info = get_userdata($post->user);
 					$edit_button = '';
+					$edit_button2 = '';
 					$count_rep = 0;
 					$rpl = 0;
 					$str = "'";
@@ -849,12 +861,13 @@ function wp_admin_blog_page() {
 						}
 					}
 					// print messages
+					$message_time = human_time_diff( mktime($time[0][3], $time[0][4], $time[0][5], $time[0][1], $time[0][2], $time[0][0] ), current_time('timestamp') ) . ' ' . __( 'ago', 'wp_admin_blog' );
 					echo '<tr>';
 					echo '<td style="padding:10px; width:60px;">
 							<span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 50) . '</span></td>';
 					echo '<td style="padding:10px;">
 							<div id="wp_admin_blog_message_' . $post->post_ID . '">
-								<p style="color:#AAAAAA;">' . $time[0][3]. ':' . $time[0][4] . ' ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>
+								<p style="color:#AAAAAA;">' . $message_time . ' | ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>
 								<p>' . $message_text . '</p>
 								<div class="wam-row-actions">' . $edit_button . '</div>
 							</div>
