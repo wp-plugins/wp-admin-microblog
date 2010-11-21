@@ -1,46 +1,18 @@
 @charset "utf-8";
 /* Help container */
-div#wam_hilfe_anzeigen {
-	-webkit-border-radius: 5px;
-	-khtml-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	background-color: rgb(243,243,243);
-	border:1px solid silver;
-	padding:5px;
-	margin:5px;
-	display:none;
-}
+div#wam_hilfe_anzeigen {-webkit-border-radius: 5px;-khtml-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;background-color: rgb(243,243,243);border:1px solid silver;padding:5px;margin:5px;display:none;}
 /* Help headline */
-h3.wam_help {
-	color:#005A46;
-	margin-bottom:5px;
-}
+h3.wam_help {color:#005A46;margin-bottom:5px;}
 /* Help: Question */
-p.wam_help_h {
-	font-weight:bold;
-}
+p.wam_help_h {font-weight:bold;}
 /* Help: Answer */
-p.wam_help_t {
-	padding-left:10px;
-}
+p.wam_help_t {padding-left:10px;}
 /* Help: close button */
-p.wam_help_c {
-	padding-left:15px;
-}
+p.wam_help_c {padding-left:15px;}
 /* Message menu */
-.wam-row-actions {
-	visibility: hidden;
-	padding: 2px 0 0;
-	color:#AAAAAA;
-}
-.wam-row-actions a:hover {
-	color:#FF6600;
-}
-tr:hover .wam-row-actions {
-	visibility: visible;
-}
-.wam-row-actions-visible {
-	padding: 2px 0 0;
-	cursor: pointer;
-}
+.wam-row-actions {visibility: hidden;padding: 2px 0 0;color:#AAAAAA;}
+.wam-row-actions a:hover {color:#FF6600;}
+tr:hover .wam-row-actions {visibility: visible;}
+.wam-row-actions-visible {padding: 2px 0 0;cursor: pointer;}
+/* Media buttons */
+.wpam_media_buttons a {padding:3px;}

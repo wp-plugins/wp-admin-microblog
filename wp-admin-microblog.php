@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.4
+Version: 0.9.5
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 2.8
@@ -32,6 +32,9 @@ Max WP Version: 3.0.1
 	
 	You find the license text under:
 	http://www.opensource.org/licenses/gpl-2.0.php
+
+  LICENCE Information of included parts
+  - document-new-6.png (Oxygen Icons 4.3.1 by http://www.oxygen-icons.org/) - Licence: LPGL
 */
 
 // Define databases
@@ -48,22 +51,26 @@ function wp_admin_blog_add_menu_settings() {
 	add_options_page(__('WP Admin Microblog Settings','wp_admin_blog'),'WP Admin Microblog','administrator','wp-admin-blog', 'wp_admin_blog_settings');
 }
 
-/* Save all variables
+/* Secure variables
  * @param $var
  * @param $type - integer, string (default)
 */
 function wp_admin_blog_sec_var($var, $type = 'string') {
 	$var = htmlspecialchars($var);
-	if ($type == 'string') { 
-		/* precipitate problems with double slashes
-		if (get_magic_quotes_gpc() == 0) {
-			$var = addslashes($var);
-		} */
-	}
 	if ($type == 'integer') {
 		settype($var, 'integer');
 	}
 	return $var;
+}
+
+/* Display media buttons
+ * adapted from P2-Theme
+*/
+function wp_admin_blog_media_buttons() {
+	include_once ABSPATH . '/wp-admin/includes/media.php';
+	ob_start();
+	do_action( 'media_buttons' );
+	return ob_get_clean();
 }
 
 /* Add new message
@@ -120,6 +127,7 @@ function wp_admin_blog_add_message ($content, $user, $tags, $parent) {
 	// Send message
 	wp_admin_blog_find_user($content, $user);
 }
+
 /* Delete message
  * @param $delete - Post ID
  */
@@ -130,6 +138,7 @@ function wp_admin_blog_del_message($delete) {
 	$wpdb->query( "DELETE FROM " . $admin_blog_posts . " WHERE post_ID = $delete" );
 	$wpdb->query( "DELETE FROM " . $admin_blog_relations . " WHERE post_ID = $delete" );
 }
+
 /* Update message
  * @param $post_ID - Post ID
  * @param $text - text
@@ -144,12 +153,16 @@ function wp_admin_blog_update_message($post_ID, $text) {
 }
 
 /* Add a message as WordPress blog post
- *
+ * @param $content - the content of the message
+ * @param $title - the title of the message
+ * @param $author - the user id
+ * @paran $tags - a string with tags (seperate by comma)
 */ 
 function wp_admin_blog_add_as_wp_post ($content, $title, $author, $tags) {
 	if ($title == '') {
 		$title = __('Short message','wp_admin_blog');
 	}
+	$content = str_replace('(file://)', 'http://', $content);
 	$message = array();
  	$message['post_title'] = $title;
  	$message['post_content'] = $content;
@@ -188,21 +201,30 @@ function wp_admin_blog_datumsplit($datum) {
  * @param $text - string
  * return $text - string
 */ 
-function wp_admin_blog_replace_url($text) {	
-	if ( preg_match_all("((http://|https://|ftp://|mailto:|news:)[^ ]+)", $text, $match) ) {
-		$prefix = '#(^|[^"=]{1})(http://|https://|ftp://|mailto:|news:)([^\s]+)([\s\n]|$)#sm';
+function wp_admin_blog_replace_url($text) {
+	// correct a problem when <br /> stands behind an url
+	$text = str_replace("<br />"," <br />",$text);
+	if ( preg_match_all("((http://|https://|ftp://|file://|mailto:|news:)[^ ]+)", $text, $match) ) {
+		$prefix = '#(^|[^"=]{1})(http://|https://|ftp://|file://|mailto:|news:)([^\s]+)([\s\n]|$)#sm';
 		for ($x = 0; $x < count($match[0]); $x++) {
-			$link_text = $match[0][$x];
-			$length = strlen($link_text);
-			$link_text = substr($link_text, 0 , 50);
-			if ($length > 50) {
-				$link_text = $link_text . '[...]';
+			if ($match[1][$x] == 'file://') {
+				$link = str_replace('(file://)', 'http://', $match[0][$x]);
+				$text = str_replace($match[0][$x], ' <a href="' . $link . '" target="_blank" title="' . $link . '">' . basename($match[0][$x]) . '</a> ', $text);
 			}
-			$text = preg_replace($prefix, ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $link_text . '</a> ', $text); 
+			else {
+				$link_text = $match[0][$x];
+				$length = strlen($link_text);
+				$link_text = substr($link_text, 0 , 50);
+				if ($length > 50) {
+					$link_text = $link_text . '[...]';
+				}
+				$text = str_replace($match[0][$x], ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $link_text . '</a> ', $text);
+			}
 		}
 	}
 	return $text;
 }
+
 /* Handle bbcodes
  * @param $text - string
  * @param $mode - string --> replace (replace with HTML-Tag) or delete (Delete bbcode)
@@ -225,7 +247,8 @@ function wp_admin_blog_replace_bbcode($text, $mode = 'replace') {
 }
 
 /* Find users in string an send mail
- * @param $text - string
+ * @param $text - message text
+ * @param $user - ARRAY
 */ 
 function wp_admin_blog_find_user($text, $user) {
 	global $wpdb;
@@ -235,6 +258,7 @@ function wp_admin_blog_find_user($text, $user) {
 	$text = $text . ' ';
 	$text = wp_admin_blog_replace_bbcode($text, 'delete');
 	$text = str_replace("<br />","",$text);
+	$text = str_replace('(file://)', 'http://', $text);
 	$text = __('Author:','wp_admin_blog') . ' ' . $user->display_name . chr(13) . chr(10) . chr(13) . chr(10) . $text;
 	$text = $text . chr(13) . chr(10) . '________________________' . chr(13) . chr(10) . __('Login under the following address to create a reply:','wp_admin_blog') . ' ' . wp_login_url();
 	
@@ -251,10 +275,15 @@ function wp_admin_blog_find_user($text, $user) {
 		}	
 	}
 }
+
 /* Update who can use the plugin
- * @param $roles
+ * @param $roles - ARRAY
+ * @param $tags - number of tags in the tag cloud
+ * @paran $messages - number of messages per page
+ * @param $reply - true or false
+ * @param $upload - true or false
  */
-function wp_admin_blog_update_options ($roles, $tags, $messages, $reply) {
+function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload) {
 	global $wp_roles;
     $wp_roles->WP_Roles();
 	// Roles
@@ -289,6 +318,14 @@ function wp_admin_blog_update_options ($roles, $tags, $messages, $reply) {
 	}
 	else {
 		update_option('wp_admin_blog_auto_reply', $reply );
+	}
+	// Media Upload
+	// Auto reply
+	if ( !get_option('wp_admin_blog_media_upload') ) {
+		add_option('wp_admin_blog_media_upload', $upload, '', 'no');
+	}
+	else {
+		update_option('wp_admin_blog_media_upload', $upload );
 	}
 } 
 
@@ -331,6 +368,10 @@ function wp_admin_blog_widget_function() {
 	echo '<form method="post" name="wp_admin_blog_dashboard_widget" id="wp_admin_blog_dashboard_widget" action="' .  $PHP_SELF . '">';
 	
 	echo '<div id="wpam_new_message" style="display:none;">';
+	$test = get_option('wp_admin_blog_media_upload');
+	if ( $test == 'true' ) {
+		echo '<div class="wpam_media_buttons" style="text-align:right;">' .  wp_admin_blog_media_buttons() . '</div>';
+	}
 	echo '<textarea name="wpam_nm_text" id="wpam_nm_text" cols="70" rows="4" style="width:100%;"></textarea>';
     echo '<input name="wpam_nm_tags" id="wpam_nm_tags" type="text" style="width:100%;" value="' . __('Tags (seperate by comma)', 'wp_admin_blog') . '" onblur="if(this.value==' . $str . $str . ') this.value=' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ';" onfocus="if(this.value==' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ') this.value=' . $str . $str . ';" />';
 	echo '<table style="width:100%; border-bottom:1px solid rgb(223 ,223,223); padding:10px;">';
@@ -398,7 +439,7 @@ function wp_admin_blog_widget_function() {
 function wp_admin_blog_add_widgets() {
 	if ( current_user_can( 'use_wp_admin_microblog' ) ) {
 		$str = "'";
-		$title =  __('Microblog','wp_admin_blog') . ' <a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none;">' . __('New','wp_admin_blog') . '</a>';
+		$title = '<a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none; font-size:12px; font-weight:bold; color:#464646;" title="' . __('New Message','wp_admin_blog') . '">' . __('Microblog','wp_admin_blog') . ' <img src="' .  WP_PLUGIN_URL . '/wp-admin-microblog/images/document-new-6.png' . '" heigth="12" width="12" /></a>';
 		wp_add_dashboard_widget('wp_admin_blog_dashboard_widget', '' . $title . '', 'wp_admin_blog_widget_function');
 	}
 }
@@ -413,8 +454,9 @@ $check = '';
 $admin_tags = wp_admin_blog_sec_var($_GET[admin_tags], 'integer');
 $admin_messages = wp_admin_blog_sec_var($_GET[admin_messages], 'integer');
 $auto_reply = wp_admin_blog_sec_var($_GET[auto_reply]);
+$media_upload = wp_admin_blog_sec_var($_GET[media_upload]);
 if ( isset($_GET[save]) ) {
-	wp_admin_blog_update_options($userrole, $admin_tags, $admin_messages, $auto_reply);
+	wp_admin_blog_update_options($userrole, $admin_tags, $admin_messages, $auto_reply, $media_upload);
 }
 
 if ( !get_option('wp_admin_blog_number_tags') ) { $admin_tags = 50; }
@@ -426,12 +468,14 @@ else { $admin_messages = get_option('wp_admin_blog_number_messages'); }
 if ( !get_option('wp_admin_blog_auto_reply') ) { $auto_reply = 'false'; }
 else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
 
+if ( !get_option('wp_admin_blog_media_upload') ) { $media_upload = 'false'; }
+else { $media_upload = get_option('wp_admin_blog_media_upload'); }
+
 ?>
 <div class="wrap">
 <h2><?php _e('WP Admin Microblog Settings','wp_admin_blog'); ?></h2>
 <form name="form1" id="form1" method="get" action="<?php echo $PHP_SELF ?>">
 <input name="page" type="hidden" value="wp-admin-blog" />
-<h3><?php _e('General','wp_admin_blog'); ?></h3>
 <table class="form-table">
 	<tr>
     	<th scope="row"><?php _e('Number of tags','wp_admin_blog'); ?></th>
@@ -458,6 +502,22 @@ else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
 			  ?>
         	</select></td>
         <td><em><?php _e('Activate this option and the plugin insert in every reply the string for the auto e-mail notification','wp_admin_blog'); ?></em></td>
+    </tr>
+    <tr>
+    	<th scope="row"><?php _e('Media upload for the dashboard widget','wp_admin_blog'); ?></th>
+        <td><select name="media_upload">
+        	<?php
+        	if ($media_upload == 'true') {
+            	echo '<option value="true" selected="selected">' . __('yes','wp_admin_blog') . '</option>';
+           		echo '<option value="false">' . __('no','wp_admin_blog') . '</option>';
+			}
+			else {
+				echo '<option value="true">' . __('yes','wp_admin_blog') . '</option>';
+				echo '<option value="false" selected="selected">' . __('no','wp_admin_blog') . '</option>';
+			} 
+			  ?>
+        	</select></td>
+        <td><em><?php _e('Activate this option to use the media upload for the WP Admin Microblog dashboard widget. If you use it, please notify, that the media upload will not work correctly for QuickPress.','wp_admin_blog'); ?></em></td>
     </tr>
 	<tr>
     <th scope="row"><?php _e('Access for','wp_admin_blog'); ?></th>
@@ -494,7 +554,7 @@ function wp_admin_blog_page() {
 	global $admin_blog_relations;
 	get_currentuserinfo();
 	$user = $current_user->ID;
-	$content = wp_admin_blog_sec_var($_POST[content]);
+	$content = wp_admin_blog_sec_var($_POST[wpam_nm_text]);
 	$headline = wp_admin_blog_sec_var($_POST[headline]);
 	$text = wp_admin_blog_sec_var($_GET[wp_admin_blog_edit_text]);
 	$tags = wp_admin_blog_sec_var($_POST[tags]);
@@ -677,10 +737,11 @@ function wp_admin_blog_page() {
         </tr>
         <tr>
         	<td>
-            <div id="postdiv" class="postarea">
-            <textarea name="content" id="content" style="width:100%;" rows="4"></textarea>
-            </div>
+            <div class="wpam_media_buttons" style="text-align:right;"><?php echo wp_admin_blog_media_buttons(); ?></div>
+            <div id="postdiv" class="postarea" style="display:block;">
+            <textarea name="wpam_nm_text" id="wpam_nm_text" style="width:100%;" rows="4"></textarea>
             <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate by comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>') this.value='';" /></p>
+            </div>
             <table style="width:100%;">
             	<tr>
                 	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" style="width:80%;" /></span></td>
@@ -895,10 +956,26 @@ function wp_admin_blog_page() {
  * Add scripts ans stylesheets
 */ 
 function wp_admin_blog_header() {
-	wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
-	wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
-	wp_enqueue_style('wp_admin_blog_css');
-	wp_enqueue_script('wp_admin_blog');
+	// load scripts only, when it's wp_admin_blog page
+	if ( eregi('wp-admin-microblog', $_GET[page]) || eregi('wp-admin/index.php', $_SERVER['PHP_SELF']) ) {
+		wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
+		wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
+		wp_enqueue_style('wp_admin_blog_css');
+		wp_enqueue_script('wp_admin_blog');
+		wp_enqueue_script('media-upload');
+		add_thickbox();
+	}
+	// load the hack for the normal WP Admin Microblog page
+	if ( eregi('wp-admin-microblog', $_GET[page]) ) {
+		wp_register_script('wp_admin_blog_upload_hack', WP_PLUGIN_URL . '/wp-admin-microblog/media-upload-hack.js');
+		wp_enqueue_script('wp_admin_blog_upload_hack');
+	}
+	// load the hack for the dashboard, when the user say yes
+	$test = get_option('wp_admin_blog_media_upload');
+	if (eregi('wp-admin/index.php', $_SERVER['PHP_SELF']) && $test == 'true') {
+		wp_register_script('wp_admin_blog_upload_hack', WP_PLUGIN_URL . '/wp-admin-microblog/media-upload-hack.js');
+		wp_enqueue_script('wp_admin_blog_upload_hack');
+	}
 }
 /*
  * Installer
@@ -972,6 +1049,9 @@ function wp_admin_blog_install () {
 	}
 	if ( !get_option('wp_admin_blog_auto_reply') ) {
 		add_option('wp_admin_blog_auto_reply', 'false', '', 'no');
+	}
+	if ( !get_option('wp_admin_blog_media_upload') ) {
+		add_option('wp_admin_blog_media_upload', 'false', '', 'no');
 	}
 }
 // load language support
