@@ -3,17 +3,17 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.5
+Version: 0.9.6
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 2.8
-Max WP Version: 3.0.1
+Max WP Version: 3.0.4
 */
 
 /*
    LICENCE
  
-    Copyright 2010  Michael Winkler
+    Copyright 2010-2011  Michael Winkler
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -282,8 +282,9 @@ function wp_admin_blog_find_user($text, $user) {
  * @paran $messages - number of messages per page
  * @param $reply - true or false
  * @param $upload - true or false
+ * @param $blog_post - ARRAY
  */
-function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload) {
+function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload, $blog_post) {
 	global $wp_roles;
     $wp_roles->WP_Roles();
 	// Roles
@@ -297,6 +298,18 @@ function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload
     }
     foreach ($who_cannot as $role) {
         $wp_roles->remove_cap($role, 'use_wp_admin_microblog');
+    }
+	// Roles for message as a blop post
+	if ( empty($blog_post) || ! is_array($blog_post) ) { 
+		$blog_post = array(); 
+	}
+	$who_can = $blog_post;
+    $who_cannot = array_diff( array_keys($wp_roles->role_names), $blog_post);
+    foreach ($who_can as $role) {
+        $wp_roles->add_cap($role, 'use_wp_admin_microblog_bp');
+    }
+    foreach ($who_cannot as $role) {
+        $wp_roles->remove_cap($role, 'use_wp_admin_microblog_bp');
     }
 	// Number of tags
 	if ( !get_option('wp_admin_blog_number_tags') ) {
@@ -320,7 +333,6 @@ function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload
 		update_option('wp_admin_blog_auto_reply', $reply );
 	}
 	// Media Upload
-	// Auto reply
 	if ( !get_option('wp_admin_blog_media_upload') ) {
 		add_option('wp_admin_blog_media_upload', $upload, '', 'no');
 	}
@@ -376,7 +388,9 @@ function wp_admin_blog_widget_function() {
     echo '<input name="wpam_nm_tags" id="wpam_nm_tags" type="text" style="width:100%;" value="' . __('Tags (seperate by comma)', 'wp_admin_blog') . '" onblur="if(this.value==' . $str . $str . ') this.value=' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ';" onfocus="if(this.value==' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ') this.value=' . $str . $str . ';" />';
 	echo '<table style="width:100%; border-bottom:1px solid rgb(223 ,223,223); padding:10px;">';
     echo '<tr>';
-    echo '<td style="font-size:11px;"><input name="wpam_as_wp_post" id="wpam_as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide(' . $str . 'wpam_as_wp_post_title' . $str .')" /> <label for="wpam_as_wp_post">' . __('as WordPress blog post', 'wp_admin_blog') . '</label> <span style="display:none;" id="wpam_as_wp_post_title">&rarr; <label for="wpam_nm_headline">' . __('Title', 'wp_admin_blog') . ' </label><input name="wpam_nm_headline" id="wpam_nm_headline" type="text" style="width:80%;" /></span></td>';
+	if ( current_user_can( 'use_wp_admin_microblog_bp' ) ) {
+    	echo '<td style="font-size:11px;"><input name="wpam_as_wp_post" id="wpam_as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide(' . $str . 'wpam_as_wp_post_title' . $str .')" /> <label for="wpam_as_wp_post">' . __('as WordPress blog post', 'wp_admin_blog') . '</label> <span style="display:none;" id="wpam_as_wp_post_title">&rarr; <label for="wpam_nm_headline">' . __('Title', 'wp_admin_blog') . ' </label><input name="wpam_nm_headline" id="wpam_nm_headline" type="text" style="width:80%;" /></span></td>';
+	}	
     echo '<td style="text-align:right;"><input type="submit" name="wpam_nm_submit" id="wpam_nm_submit" class="button-primary" value="' . __('Send', 'wp_admin_blog') . '" /></td>';
     echo '</tr>';
     echo '</table>';
@@ -449,14 +463,15 @@ function wp_admin_blog_add_widgets() {
 */ 
 // Option Page
 function wp_admin_blog_settings () {
-$userrole = $_GET[userrole];
+$userrole = $_POST[userrole];
+$blog_post = $_POST[blog_post];
 $check = '';
-$admin_tags = wp_admin_blog_sec_var($_GET[admin_tags], 'integer');
-$admin_messages = wp_admin_blog_sec_var($_GET[admin_messages], 'integer');
-$auto_reply = wp_admin_blog_sec_var($_GET[auto_reply]);
-$media_upload = wp_admin_blog_sec_var($_GET[media_upload]);
-if ( isset($_GET[save]) ) {
-	wp_admin_blog_update_options($userrole, $admin_tags, $admin_messages, $auto_reply, $media_upload);
+$admin_tags = wp_admin_blog_sec_var($_POST[admin_tags], 'integer');
+$admin_messages = wp_admin_blog_sec_var($_POST[admin_messages], 'integer');
+$auto_reply = wp_admin_blog_sec_var($_POST[auto_reply]);
+$media_upload = wp_admin_blog_sec_var($_POST[media_upload]);
+if ( isset($_POST[save]) ) {
+	wp_admin_blog_update_options($userrole, $admin_tags, $admin_messages, $auto_reply, $media_upload, $blog_post);
 }
 
 if ( !get_option('wp_admin_blog_number_tags') ) { $admin_tags = 50; }
@@ -474,7 +489,7 @@ else { $media_upload = get_option('wp_admin_blog_media_upload'); }
 ?>
 <div class="wrap">
 <h2><?php _e('WP Admin Microblog Settings','wp_admin_blog'); ?></h2>
-<form name="form1" id="form1" method="get" action="<?php echo $PHP_SELF ?>">
+<form name="form1" id="form1" method="post" action="<?php echo $PHP_SELF ?>">
 <input name="page" type="hidden" value="wp-admin-blog" />
 <table class="form-table">
 	<tr>
@@ -536,6 +551,24 @@ else { $media_upload = get_option('wp_admin_blog_media_upload'); }
 	</select>
 	</td>
     <td><em><?php _e('Select which userroles have access to WP Admin Microblog.','wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select multiple roles.','wp_admin_blog'); ?></em></td>
+    </tr>
+    <tr>
+    <th scope="row"><?php _e('"Message as a blog post"-function for','wp_admin_blog'); ?></th>
+    <td>
+    <select name="blog_post[]" id="blog_post" multiple="multiple" style="height:80px;">
+	<?php
+    global $wp_roles;
+    $wp_roles->WP_Roles();
+    foreach ($wp_roles->role_names as $roledex => $rolename) 
+    {
+        $role = $wp_roles->get_role($roledex);
+        $select = $role->has_cap('use_wp_admin_microblog_bp') ? 'selected="selected"' : '';
+        echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
+    }
+    ?>
+	</select>
+    </td>
+    <td><em><?php _e('Select which userroles can use the "Message as a blog post"-function.','wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select multiple roles.','wp_admin_blog'); ?></em></td>
     </tr>
 </table>
 <p class="submit">
@@ -744,7 +777,9 @@ function wp_admin_blog_page() {
             </div>
             <table style="width:100%;">
             	<tr>
+                	<?php if ( current_user_can( 'use_wp_admin_microblog_bp' ) ) { ?>
                 	<td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" value="true" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" style="width:80%;" /></span></td>
+                    <?php } ?>
             		<td style="text-align:right; border-bottom-width:0px;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" /></td>
             	</tr>
             </table>
@@ -992,6 +1027,9 @@ function wp_admin_blog_install () {
 	$role = $wp_roles->get_role('administrator');
 	if ( !$role->has_cap('use_wp_admin_microblog') ) {
 		$wp_roles->add_cap('administrator', 'use_wp_admin_microblog');
+	}
+	if ( !$role->has_cap('use_wp_admin_microblog_bp') ) {
+		$wp_roles->add_cap('administrator', 'use_wp_admin_microblog_bp');
 	}
 	
 	// charset & collate like WordPress

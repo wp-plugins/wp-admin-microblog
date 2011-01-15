@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
 Tested up to: 3.0.1
-Stable tag: 0.9.5
+Stable tag: 0.9.6
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -13,14 +13,14 @@ WP Admin Microblog adds a separate microblog in your WordPress backend. The plug
 
 = Supported Languages =
 * English 
-* Deutsch
+* German
 
 = Disclaimer =  
 Use at your own risk. No warranty expressed or implied is provided. 
 
 == Credits ==
 
-Copyright 2010 by Michael Winkler
+Copyright 2010-2011 by Michael Winkler
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,8 +47,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 1. Main interface
 2. Dashboard widget
+3. The options
 
 == Frequently Asked Questions ==
+
+= I updated the plugin and now I don't find the "as a blog post"-option. What's wrong? =
+With version 0.9.6 you can select in the options which user group can use this function. After the upgrade the function is not activated directly. So you must only reactive it.
 
 = How can I send a message as e-mail notification? =
 If you will send your message via e-mail to any user, so write @username (example: @admin).
@@ -57,6 +61,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 0.9.6 - (15.01.2011) =
+* New: You can select which user group can publish a message as a WordPress blog post 
 = 0.9.5 - (21.11.2010) =
 * New: Add files to your message from the WordPress Media Library
 * Bugfix: Some small GUI improvements
