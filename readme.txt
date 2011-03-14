@@ -2,8 +2,8 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 2.8
-Tested up to: 3.0.1
-Stable tag: 0.9.6
+Tested up to: 3.1
+Stable tag: 0.9.7
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -61,6 +61,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 0.9.7 - (14.03.2011) =
+* Bugfix: Use the Wordpress gmt offset (= WordPress timezone settings) for adding messages. Before the time cames from the MySQL-Server
 = 0.9.6 - (15.01.2011) =
 * New: You can select which user group can publish a message as a WordPress blog post 
 = 0.9.5 - (21.11.2010) =

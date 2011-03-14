@@ -53,7 +53,7 @@ function wpam_editMessage(post_ID) {
 		document.getElementById("div_edit").appendChild(save_button);
 		document.getElementById("div_edit").appendChild(cancel_button);
 	}
-	}
+}
 // for editing messages
 function wpam_replyMessage(post_ID, parent_ID, reply, author) {
 	var parent = "wp_admin_blog_message_" + post_ID;

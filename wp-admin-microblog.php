@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.6
+Version: 0.9.7
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 2.8
-Max WP Version: 3.0.4
+Max WP Version: 3.1
 */
 
 /*
@@ -85,7 +85,8 @@ function wp_admin_blog_add_message ($content, $user, $tags, $parent) {
 	global $admin_blog_relations;
 	if ($content != '') {
 		$content = nl2br($content);
-		$sql = sprintf("INSERT INTO " . $admin_blog_posts . " (`post_parent`, `text`, `date`, `user`) VALUES('$parent', '$content', NOW(), '$user')", 
+		$post_time = current_time('mysql',0);
+		$sql = sprintf("INSERT INTO " . $admin_blog_posts . " (`post_parent`, `text`, `date`, `user`) VALUES('$parent', '$content', '$post_time', '$user')", 
 			mysql_real_escape_string( "$" . $admin_blog_posts . "_text"));
 		$wpdb->query($sql);
 		// Tags
@@ -634,7 +635,6 @@ function wp_admin_blog_page() {
 	}
 	?>
     <div class="wrap" style="max-width:1200px; min-width:780px; width:96%; padding-top:10px;">
-    
     <h2><?php _e('Microblog','wp_admin_blog');?><span class="tp_break">|</span> <small><a onclick="wpam_showhide('wam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('Help','wp_admin_blog'); ?></a></small></h2>
  <div id="wam_hilfe_anzeigen">
     	<h3 class="wam_help"><?php _e('Help','wp_admin_blog'); ?></h3>
