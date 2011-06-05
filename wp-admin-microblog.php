@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 0.9.7
+Version: 1.0.0
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
-Min WP Version: 2.8
-Max WP Version: 3.1
+Min WP Version: 3.0
+Max WP Version: 3.2
 */
 
 /*
@@ -237,12 +237,20 @@ function wp_admin_blog_replace_bbcode($text, $mode = 'replace') {
 		$text = preg_replace("/\[i\](.*)\[\/i\]/Usi", "<em>\\1</em>", $text); 
 		$text = preg_replace("/\[u\](.*)\[\/u\]/Usi", "<u>\\1</u>", $text);
 		$text = preg_replace("/\[s\](.*)\[\/s\]/Usi", "<s>\\1</s>", $text);
+		$text = preg_replace("/\[red\](.*)\[\/red\]/Usi", '<span style="color:red;">\\1</span>', $text);
+		$text = preg_replace("/\[blue\](.*)\[\/blue\]/Usi", '<span style="color:blue;">\\1</span>', $text);
+		$text = preg_replace("/\[green\](.*)\[\/green\]/Usi", '<span style="color:green;">\\1</span>', $text);
+		$text = preg_replace("/\[orange\](.*)\[\/orange\]/Usi", '<span style="color:orange;">\\1</span>', $text);
 	}
 	if ($mode == 'delete') {
 		$text = preg_replace("/\[b\](.*)\[\/b\]/Usi", "\\1", $text); 
 		$text = preg_replace("/\[i\](.*)\[\/i\]/Usi", "\\1", $text); 
 		$text = preg_replace("/\[u\](.*)\[\/u\]/Usi", "\\1", $text);
 		$text = preg_replace("/\[s\](.*)\[\/s\]/Usi", "\\1", $text);
+		$text = preg_replace("/\[red\](.*)\[\/red\]/Usi", "\\1", $text);
+		$text = preg_replace("/\[blue\](.*)\[\/blue\]/Usi", "\\1", $text);
+		$text = preg_replace("/\[green\](.*)\[\/green\]/Usi", "\\1", $text);
+		$text = preg_replace("/\[orange\](.*)\[\/orange\]/Usi", "\\1", $text);
 	}
 	return $text;
 }
@@ -277,6 +285,60 @@ function wp_admin_blog_find_user($text, $user) {
 	}
 }
 
+/* WP Admin Microblog Page Menu (= teachPress Admin Page Menu)
+ * @access	public
+ * @param 	$number_entries (Integer)	-> Number of all available entries
+ * @param 	$entries_per_page (Integer)	-> Number of entries per page
+ * @param 	$current_page (Integer)		-> current displayed page
+ * @param	$entry_limit (Integer) 		-> SQL entry limit
+ * @param 	$page_link (String)			-> example: admin.php?page=wp-admin-microblog/wp-admin-microblog.php
+ * @param	$link_atrributes (String)	-> example: search=$search&amp;tag=$tag
+ * @param 	$type - top or bottom, default: top
+*/
+function wp_admin_blog_page_menu ($number_entries, $entries_per_page, $current_page, $entry_limit, $page_link = '', $link_attributes = '', $type = 'top') {
+	// if number of entries > number of entries per page
+	if ($number_entries > $entries_per_page) {
+		$num_pages = floor (($number_entries / $entries_per_page));
+		$mod = $number_entries % $entries_per_page;
+		if ($mod != 0) {
+			$num_pages = $num_pages + 1;
+		}
+		
+		// first page / previous page
+		if ($entry_limit != 0) {
+			$back_links = '<a href="' . $page_link . '&amp;limit=1&amp;' . $link_attributes . '" title="' . __('first page','wp_admin_blog') . '" class="page-numbers">&laquo;</a> <a href="' . $page_link . '&amp;limit=' . ($current_page - 1) . '&amp;' . $link_attributes . '" title="' . __('previous page','wp_admin_blog') . '" class="page-numbers">&lsaquo;</a> ';
+		}
+		else {
+			$back_links = '<a class="first-page disabled">&laquo;</a> <a class="prev-page disabled">&lsaquo;</a> ';
+		}
+		$page_input = ' <input name="limit" type="text" size="2" value="' .  $current_page . '" style="text-align:center;" /> ' . __('of','wp_admin_blog') . ' ' . $num_pages . ' ';
+		
+		// next page/ last page
+		if ( ( $entry_limit + $entries_per_page ) <= ($number_entries)) { 
+			$next_links = '<a href="' . $page_link . '&amp;limit=' . ($current_page + 1) . '&amp;' . $link_attributes . '" title="' . __('next page','wp_admin_blog') . '" class="page-numbers">&rsaquo;</a> <a href="' . $page_link . '&amp;limit=' . $num_pages . '&amp;' . $link_attributes . '" title="' . __('last page','wp_admin_blog') . '" class="page-numbers">&raquo;</a> ';
+		}
+		else {
+			$next_links = '<a class="next-page disabled">&rsaquo;</a> <a class="last-page disabled">&raquo;</a> ';
+		}
+		
+		// for displaying number of entries
+		if ($entry_limit + $entries_per_page > $number_entries) {
+			$anz2 = $number_entries;
+		}
+		else {
+			$anz2 = $entry_limit + $entries_per_page;
+		}
+		
+		// return
+		if ($type == 'top') {
+			return '<div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('entries','wp_admin_blog') . '</span> ' . $back_links . '' . $page_input . '' . $next_links . '</div>';
+		}
+		else {
+			return '<div class="tablenav"><div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('entries','wp_admin_blog') . '</span> ' . $back_links . ' ' . $current_page . ' ' . __('of','wp_admin_blog') . ' ' . $num_pages . ' ' . $next_links . '</div></div>';
+		}	
+	}
+}	
+
 /* Update who can use the plugin
  * @param $roles - ARRAY
  * @param $tags - number of tags in the tag cloud
@@ -287,7 +349,6 @@ function wp_admin_blog_find_user($text, $user) {
  */
 function wp_admin_blog_update_options ($roles, $tags, $messages, $reply, $upload, $blog_post) {
 	global $wp_roles;
-    $wp_roles->WP_Roles();
 	// Roles
     if ( empty($roles) || ! is_array($roles) ) { 
 		$roles = array(); 
@@ -541,9 +602,7 @@ else { $media_upload = get_option('wp_admin_blog_media_upload'); }
     <select name="userrole[]" id="userrole" multiple="multiple" style="height:80px;">
 	<?php
     global $wp_roles;
-    $wp_roles->WP_Roles();
-    foreach ($wp_roles->role_names as $roledex => $rolename) 
-    {
+    foreach ($wp_roles->role_names as $roledex => $rolename) {
         $role = $wp_roles->get_role($roledex);
         $select = $role->has_cap('use_wp_admin_microblog') ? 'selected="selected"' : '';
         echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
@@ -558,10 +617,7 @@ else { $media_upload = get_option('wp_admin_blog_media_upload'); }
     <td>
     <select name="blog_post[]" id="blog_post" multiple="multiple" style="height:80px;">
 	<?php
-    global $wp_roles;
-    $wp_roles->WP_Roles();
-    foreach ($wp_roles->role_names as $roledex => $rolename) 
-    {
+    foreach ($wp_roles->role_names as $roledex => $rolename) {
         $role = $wp_roles->get_role($roledex);
         $select = $role->has_cap('use_wp_admin_microblog_bp') ? 'selected="selected"' : '';
         echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
@@ -608,13 +664,15 @@ function wp_admin_blog_page() {
 	else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
 	// Handles limits 
 	if (isset($_GET[limit])) {
-		$message_limit = (int)$_GET[limit];
-		if ($message_limit < 0) {
-			$message_limit = 0;
+		$curr_page = (int)$_GET[limit] ;
+		if ( $curr_page <= 0 ) {
+			$curr_page = 1;
 		}
+		$message_limit = ( $curr_page - 1 ) * $number_messages;
 	}
 	else {
 		$message_limit = 0;
+		$curr_page = 1;
 	}
 	// Handles actions
 	if (isset($_POST[send])) {
@@ -641,7 +699,7 @@ function wp_admin_blog_page() {
         <p class="wam_help_h"><?php _e('E-mail notification','wp_admin_blog'); ?></p>
         <p class="wam_help_t"><?php _e('If you will send your message as an E-Mail to any user, so write @username (example: @admin)','wp_admin_blog'); ?></p>
         <p class="wam_help_h"><?php _e('Text formatting','wp_admin_blog'); ?></p>
-        <p class="wam_help_t"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u] and [s]strikethrough[/s]. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
+        <p class="wam_help_t"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u], [s]strikethrough[/s], [red]red[/red], [blue]blue[/blue], [green]green[/green], [orange]orange[/orange]. Combinations like [red][s]text[/s][/red] are possible. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
         <p class="wam_help_c"><strong><a onclick="wpam_showhide('wam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('close','wp_admin_blog'); ?></a></strong></p>
     </div>
     <div style="width:31%; float:right; padding-right:1%;">
@@ -851,49 +909,10 @@ function wp_admin_blog_page() {
 				echo '<tr><td>' . __('Sorry, no entries mached your criteria','wp_admin_blog') . '</td></tr>';
 			}
 			else {
-				// Page Menu
-				if ($test > $number_messages) {
-					$num_pages = floor (($test / $number_messages) + 1);
-					// previous page link
-					if ($message_limit != 0) {
-						$all_pages = $all_pages . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;limit=' . ($message_limit - $number_messages) . '&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . __('previous page','wp_admin_blog') . '" class="page-numbers">&larr;</a> ';
-					}	
-					// page numbers
-					$akt_seite = $message_limit + $number_messages;
-					for($i=1; $i <= $num_pages; $i++) { 
-						$s = $i * $number_messages;
-						// First and last page
-						if ( ($i == 1 && $s != $akt_seite ) || ($i == $num_pages && $s != $akt_seite ) ) {
-							$all_pages = $all_pages . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;limit=' . ( $s - $number_messages) . '&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . __('Page','wp_admin_blog') . ' ' . $i . '" class="page-numbers">' . $i . '</a> ';
-						}
-						// current page
-						elseif ( $s == $akt_seite ) {
-							$all_pages = $all_pages . '<span class="page-numbers current">' . $i . '</span> ';
-						}
-						else {
-							// Placeholder before
-							if ( $s == $akt_seite - (2 * $number_messages) && $num_pages > 4 ) {
-								$all_pages = $all_pages . '... ';
-							}
-							// Normal page
-							if ( $s >= $akt_seite - (2 * $number_messages) && $s <= $akt_seite + (2 * $number_messages) ) {
-								$all_pages = $all_pages . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;limit=' . ( ( $i * $number_messages ) - $number_messages) . '&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . __('Page','wp_admin_blog') . ' ' . $i . '" class="page-numbers">' . $i . '</a> ';
-							}
-							// Placeholder after
-							if ( $s == $akt_seite + (2 * $number_messages) && $num_pages > 4 ) {
-								$all_pages = $all_pages . '... ';
-							}
-						}
-					}
-					// next page link
-					if ( ( $message_limit + $number_messages ) <= ($test)) { 
-        				$all_pages = $all_pages . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;limit=' . ($message_limit + $number_messages) . '&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . __('next page','wp_admin_blog') . '" class="page-numbers">&rarr;</a> ';
-					}
-					// print menu
-					echo '<tr>';
-					echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . $all_pages . '</div></td>';
-					echo '</tr>';
-				}
+				// print menu
+				echo '<tr>';
+				echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . wp_admin_blog_page_menu($test, $number_messages, $curr_page, $message_limit, 'admin.php?page=wp-admin-microblog/wp-admin-microblog.php', 'search=' . $search . '&amp;author=' . $author . '&amp;tag=' . $tag_id . '') . '</div></td>';
+				echo '</tr>';
 				$message_date_old = '';
 				// Entries
 				$post = $wpdb->get_results($sql);
@@ -975,7 +994,7 @@ function wp_admin_blog_page() {
 				// Page Menu
 				if ($test > $number_messages) {
 					echo '<tr>';
-					echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . $all_pages . '</td>';
+					echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . wp_admin_blog_page_menu($test, $number_messages, $curr_page, $message_limit, 'admin.php?page=wp-admin-microblog/wp-admin-microblog.php', 'search=' . $search . '&amp;author=' . $author . '&amp;tag=' . $tag_id . '', 'bottom') . '</td>';
 					echo '</tr>';
 				}
 			}
@@ -1023,7 +1042,6 @@ function wp_admin_blog_install () {
 	
 	// Add capabilities
 	global $wp_roles;
-	$wp_roles->WP_Roles();
 	$role = $wp_roles->get_role('administrator');
 	if ( !$role->has_cap('use_wp_admin_microblog') ) {
 		$wp_roles->add_cap('administrator', 'use_wp_admin_microblog');

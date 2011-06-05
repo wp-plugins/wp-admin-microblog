@@ -1,9 +1,9 @@
 === WP Admin Microblog ===
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
-Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 0.9.7
+Requires at least: 3.0
+Tested up to: 3.2
+Stable tag: 1.0.0
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -61,6 +61,10 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 1.0.0 - (05.06.2011) =
+* New: You can use the colors red, blue, green and orange for text highlighting
+* Changed: Page menu
+* Changed: Compatibility to WordPress 3.2
 = 0.9.7 - (14.03.2011) =
 * Bugfix: Use the Wordpress gmt offset (= WordPress timezone settings) for adding messages. Before the time cames from the MySQL-Server
 = 0.9.6 - (15.01.2011) =
