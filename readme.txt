@@ -2,14 +2,14 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 1.0.0
+Tested up to: 3.2.1
+Stable tag: 1.1.0
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
 == Description ==
 
-WP Admin Microblog adds a separate microblog in your WordPress backend. The plugin transforms automatically urls to links, supports tagging and some bbcodes and it's possible to send a message via e-mail to other users. Now, with the new dashboard widget, you can read, respond, edit and delete messages directly. So, WP Admin Microblog is great for supporting the communication within blog teams or it's a nice scratchpad. ;-)
+WP Admin Microblog adds a separate microblog in your WordPress backend. The plugin transforms automatically urls to links, supports tagging and some bbcodes and it's possible to send a message via e-mail to other users. In addition you can read, respond, edit and delete messages directly from your dashboard. So, WP Admin Microblog is great for supporting the communication within blog teams or it's a nice scratchpad. ;-)
 
 = Supported Languages =
 * English 
@@ -61,10 +61,17 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 1.1.0 - (11.09.2011) =
+* New: You can change the title of the dashboard widget and the title of the microblog page
+* Bugfix: 'file://' was not correct replaced with 'http://' in function wp_admin_blog_replace_url
+* Bugfix: Using of undefined constants
+* Bugfix: Using of undefined variables
+* Bugfix: Deprecated call of load_plugin_textdomain
 = 1.0.0 - (05.06.2011) =
 * New: You can use the colors red, blue, green and orange for text highlighting
 * Changed: Page menu
 * Changed: Compatibility to WordPress 3.2
+* Killed: Language files for en_US (because it's already the basic plugin langauge)
 = 0.9.7 - (14.03.2011) =
 * Bugfix: Use the Wordpress gmt offset (= WordPress timezone settings) for adding messages. Before the time cames from the MySQL-Server
 = 0.9.6 - (15.01.2011) =
