@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -61,6 +61,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 1.3.0 - (26.09.2011) =
+* New: Admins can edit all messages
 = 1.2.0 - (22.09.2011) =
 * New: Sticky messages
 = 1.1.0 - (11.09.2011) =

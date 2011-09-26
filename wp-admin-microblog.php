@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 1.2.0
+Version: 1.3.0
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.0
@@ -161,7 +161,8 @@ function wp_admin_blog_del_message($message_ID) {
  * @global $wpdb $wpdb
  * @global string $admin_blog_posts
  * @param $message_ID (INT)
- * @param $is_sticky (INT) - 0 or 1 
+ * @param $is_sticky (INT) - 0 or 1
+ * @since version 1.2.0
  */
 function wp_admin_blog_update_sticky($message_ID, $is_sticky) {
    global $wpdb;
@@ -622,7 +623,8 @@ function wp_admin_blog_widget_function() {
       if ($count_rep != 0) {
               $edit_button2 = ' | ' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '';
       }
-      if ($post->user == $user) {
+      // Show message edit options if the user is the author of the message or the blog admin
+      if ( $post->user == $user || current_user_can('manage_options') ) {
               $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
       }
       $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
@@ -1204,7 +1206,8 @@ function wp_admin_blog_page() {
                if ($count_rep != 0) {
                   $edit_button2 = ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;rpl=' . $rpl . '" class="wpam_replies">' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '</a>';
                }
-               if ($post->user == $user) {
+               // Show message edit options if the user is the author of the message or the blog admin
+               if ( $post->user == $user || current_user_can('manage_options') ) {
                   $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
                }
                $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
@@ -1287,10 +1290,12 @@ function wp_admin_blog_header() {
  * Updater
  * @global string $admin_blog_posts
  * @global $wpdb
+ * @since version 1.2.0
  */
 function wp_admin_blog_update() {
    global $admin_blog_posts;
    global $wpdb;
+   // Update to version 1.2.0
    if ( !get_option('wp_admin_blog_version') ) {
       add_option('wp_admin_blog_version', '1.2.0', '', 'no');
       // Add is_sticky column
