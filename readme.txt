@@ -1,9 +1,9 @@
 === WP Admin Microblog ===
 Contributors: Michael Winkler
-Tags: microblog, microblogging, admin, communication
+Tags: microblog, microblogging, admin, communication, collaboration
 Requires at least: 3.3
 Tested up to: 3.3
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -60,6 +60,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 No, sorry. Inline tagging is comming soon.
 
 == Changelog ==
+= 2.0.1 - (24.12.2011) =
+* Bugfix: Small spelling mistake
 = 2.0.0 - (24.12.2011) =
 * New: Redesigned dashboard widget
 * New: Redesigned user interface
@@ -70,48 +72,48 @@ No, sorry. Inline tagging is comming soon.
 = 1.2.0 - (22.09.2011) =
 * New: Sticky messages
 = 1.1.0 - (11.09.2011) =
-* New: You can change the title of the dashboard widget and the title of the microblog page
+* New: Changing the title of the dashboard widget and the title of the microblog page
 * Bugfix: 'file://' was not correct replaced with 'http://' in function wp_admin_blog_replace_url
 * Bugfix: Using of undefined constants
 * Bugfix: Using of undefined variables
 * Bugfix: Deprecated call of load_plugin_textdomain
 = 1.0.0 - (05.06.2011) =
-* New: You can use the colors red, blue, green and orange for text highlighting
+* New: Using the colors red, blue, green and orange for text highlighting
 * Changed: Page menu
 * Changed: Compatibility to WordPress 3.2
 * Killed: Language files for en_US (because it's already the basic plugin langauge)
 = 0.9.7 - (14.03.2011) =
-* Bugfix: Use the Wordpress gmt offset (= WordPress timezone settings) for adding messages. Before the time cames from the MySQL-Server
+* Bugfix: Use the Wordpress gmt offset (= WordPress timezone settings) for adding messages. Before the plugin used the MySQL server time
 = 0.9.6 - (15.01.2011) =
 * New: You can select which user group can publish a message as a WordPress blog post 
 = 0.9.5 - (21.11.2010) =
-* New: Add files to your message from the WordPress Media Library
+* New: Adding files to messages via WordPress Media Library
 * Bugfix: Some small GUI improvements
 * Bugfix: Better URL replacement
 = 0.9.4 - (27.09.2010) =
-* New: Write new messages directly from the dashboard
-* New: Displaying time like a microblog
+* New: Writing new messages directly from the dashboard
+* New: Displaying human time difference (i.e. 8 hours ago) instead of the date
 * Bugfix: The plugin displays a false number of replies
 = 0.9.3 = 
 * Changed: german translation
 = 0.9.2 =
-* Changed: Display today instead of the date
+* Changed: Display today instead of the current date
 * Bugfix: Tags where sent to WordPress if the user post it as WordPress post
 * Bugfix: Fixed style for the search button 
 = 0.9.1 =
 * New: Option to post a message as WordPress blog article
 = 0.9.0 =
-* Changed: Some style improvements :-)
+* Changed: Some style improvements
 * Bugfix: Fixed some problems with the e-mail notification
-* Bugfix: Fixed an utf-8 problem
+* Bugfix: Fixed an UTF-8 problem
 = 0.6.4 =
-* New: Cut urls with more than 50 chars
+* New: Cut URLs which are longer than 50 chars
 * Bugfix: Fixed a possible division across zero in the tag cloud
 = 0.6.3 =
 * New: Option for changing number of tags
 * New: Option for changing number of messages per page
-* New: Option for auto notification
-* Bugfix: Fixed some bugs in the e-mail notification function
+* New: Option for auto notifications
+* Bugfix: Fixed some bugs in the e-mail notification
 = 0.6.2 = 
 * Changed: Structure of the file directory
 * Bugfix: Better URL replacing
@@ -120,12 +122,12 @@ No, sorry. Inline tagging is comming soon.
 = 0.5.3 =
 * Bugfix: Fixed a problem with `<br />` tags, when editing messages
 * Bugfix: Fixed some security vulnerabilities (SQL injections)
-* Bugfix: Prevent sending of clean messages
+* Bugfix: Prevent sending of blank messages
 = 0.5.2 =
-* New: Possible to use bbcodes for bold, italic, strikethrough and underline
+* New: bbcodes for bold, italic, strikethrough and underline
 * Bugfix: Fixed two security vulnerabilities (XSS)
 = 0.5.1 =
-* Changed: The plugin gives an warning if there are no tags in the database --> prevent a SQL error
+* Changed: The plugin displays a warning if there are no tags in the database --> prevent a SQL error
 * Bugfix: Fixed an installer bug
 = 0.5.0 =
 * First public release

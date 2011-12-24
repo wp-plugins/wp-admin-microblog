@@ -90,7 +90,7 @@ msgstr "Lösche den Nutzer aus dem Suchfilter"
 msgid "Your Message"
 msgstr "Neue Nachricht"
 
-#: wp-admin-microblog.php:570
+#: wp-admin-microblog.php:571
 #: wp_admin_microblog_screen.php:297
 #@ wp_admin_blog
 msgid "Send"
@@ -131,25 +131,25 @@ msgstr "Nächste Seite"
 msgid "en"
 msgstr "de"
 
-#: wp-admin-microblog.php:633
+#: wp-admin-microblog.php:634
 #: wp_admin_microblog_screen.php:48
 #@ wp_admin_blog
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: wp-admin-microblog.php:633
+#: wp-admin-microblog.php:634
 #: wp_admin_microblog_screen.php:48
 #@ wp_admin_blog
 msgid "Click to delete this message"
 msgstr "Klicken um diese Nachricht zu löschen"
 
-#: wp-admin-microblog.php:633
+#: wp-admin-microblog.php:634
 #: wp_admin_microblog_screen.php:48
 #@ wp_admin_blog
 msgid "Delete"
 msgstr "Löschen"
 
-#: wp-admin-microblog.php:635
+#: wp-admin-microblog.php:636
 #: wp_admin_microblog_screen.php:50
 #@ wp_admin_blog
 msgid "Reply"
@@ -165,7 +165,7 @@ msgstr "Zeige verwandte Nachrichten"
 msgid "Tags"
 msgstr "Tags"
 
-#: wp-admin-microblog.php:640
+#: wp-admin-microblog.php:641
 #: wp_admin_microblog_screen.php:68
 #@ wp_admin_blog
 msgid "by"
@@ -236,13 +236,13 @@ msgstr "Nein"
 msgid "Activate this option and the plugin insert in every reply the string for the auto e-mail notification"
 msgstr "Aktiviere diese Option und das Plugin setzt automatisch vor jede Antwort das Kürzel zum Versenden der E-Mail Benachrichtigung."
 
-#: wp-admin-microblog.php:633
+#: wp-admin-microblog.php:634
 #: wp_admin_microblog_screen.php:48
 #@ wp_admin_blog
 msgid "Edit this message"
 msgstr "Diese Nachricht bearbeiten"
 
-#: wp-admin-microblog.php:635
+#: wp-admin-microblog.php:636
 #: wp_admin_microblog_screen.php:50
 #@ wp_admin_blog
 msgid "Write a reply"
@@ -258,13 +258,13 @@ msgstr "Autor:"
 msgid "Login under the following address to create a reply:"
 msgstr "Melde dich unter folgender Adresse an, um eine Antwort zu erstellen:"
 
-#: wp-admin-microblog.php:565
+#: wp-admin-microblog.php:566
 #: wp_admin_microblog_screen.php:308
 #@ wp_admin_blog
 msgid "as WordPress blog post"
 msgstr "als WordPress Blogartikel"
 
-#: wp-admin-microblog.php:565
+#: wp-admin-microblog.php:566
 #: wp_admin_microblog_screen.php:308
 #@ wp_admin_blog
 msgid "Title"
@@ -280,20 +280,13 @@ msgstr "Kurznachricht"
 msgid "Today"
 msgstr "Heute"
 
-#: wp-admin-microblog.php:113
-#: wp-admin-microblog.php:554
-#: wp_admin_microblog_screen.php:295
-#@ wp_admin_blog
-msgid "Tags (seperate by comma)"
-msgstr "Tags (durch Komma trennen)"
-
-#: wp-admin-microblog.php:636
+#: wp-admin-microblog.php:637
 #: wp_admin_microblog_screen.php:53
 #@ wp_admin_blog
 msgid "ago"
 msgstr "zuvor"
 
-#: wp-admin-microblog.php:662
+#: wp-admin-microblog.php:663
 #@ wp_admin_blog
 msgid "New Message"
 msgstr "Neue Nachricht"
@@ -351,14 +344,14 @@ msgstr "Standard: Microblog"
 msgid "Name of the dashboard widget"
 msgstr "Name des Dashboard Widgets"
 
-#: wp-admin-microblog.php:559
+#: wp-admin-microblog.php:560
 #: wp_admin_microblog_screen.php:299
 #@ wp_admin_blog
 msgid "Options"
 msgstr "Optionen"
 
-#: wp-admin-microblog.php:562
-#: wp-admin-microblog.php:617
+#: wp-admin-microblog.php:563
+#: wp-admin-microblog.php:618
 #: wp_admin_microblog_screen.php:39
 #: wp_admin_microblog_screen.php:303
 #@ wp_admin_blog
@@ -422,19 +415,19 @@ msgstr "Angeheftete Nachrichten im Dashboard Widget anzeigen"
 msgid "Select `yes` to display sticky messages in the dashboard widget."
 msgstr "Wähle `ja` um angeheftete Nachrichten auch im Dashboard Widget anzuzeigen."
 
-#: wp-admin-microblog.php:617
+#: wp-admin-microblog.php:618
 #: wp_admin_microblog_screen.php:39
 #@ wp_admin_blog
 msgid "Sticky"
 msgstr "Anheften"
 
-#: wp-admin-microblog.php:620
+#: wp-admin-microblog.php:621
 #: wp_admin_microblog_screen.php:42
 #@ wp_admin_blog
 msgid "Unsticky this message"
 msgstr "Diese Nachricht abheften"
 
-#: wp-admin-microblog.php:620
+#: wp-admin-microblog.php:621
 #: wp_admin_microblog_screen.php:42
 #@ wp_admin_blog
 msgid "Unsticky"
@@ -445,7 +438,7 @@ msgstr "Abheften"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: wp-admin-microblog.php:629
+#: wp-admin-microblog.php:630
 #@ wp_admin_blog
 msgid "One Reply"
 msgid_plural " Replies"
@@ -462,7 +455,7 @@ msgstr "Microblog"
 msgid "Show all replies"
 msgstr "Alle Antworten anzeigen"
 
-#: wp-admin-microblog.php:629
+#: wp-admin-microblog.php:630
 #: wp_admin_microblog_screen.php:459
 #@ wp_admin_blog
 msgid "Replies"
@@ -473,4 +466,11 @@ msgstr "Antworten"
 #@ wp_admin_blog
 msgid "Entries"
 msgstr "Einträge"
+
+#: wp-admin-microblog.php:113
+#: wp-admin-microblog.php:554
+#: wp_admin_microblog_screen.php:295
+#@ wp_admin_blog
+msgid "Tags (separate by comma)"
+msgstr "Tags (durch Komma trennen)"
 

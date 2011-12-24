@@ -3,7 +3,7 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 2.0.0
+Version: 2.0.1
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.3
@@ -110,7 +110,7 @@ function wp_admin_blog_add_message ($content, $user, $tags, $parent, $is_sticky)
       foreach($array as $element) {
          // Check if tag is in database
          $element = trim($element);
-         if ($element != "" && $element != __('Tags (seperate by comma)', 'wp_admin_blog')) {
+         if ($element != "" && $element != __('Tags (separate by comma)', 'wp_admin_blog')) {
             $abfrage = "SELECT tag_ID FROM " . $admin_blog_tags . " WHERE name = '$element'";
             $check = $wpdb->query($abfrage);
             // if not, then insert tag
@@ -551,7 +551,8 @@ function wp_admin_blog_widget_function() {
       echo '<div class="wpam_media_buttons" style="text-align:right;">' .  wp_admin_blog_media_buttons() . '</div>';
    }
    echo '<textarea name="wpam_nm_text" id="wpam_nm_text" cols="70" rows="4" style="width:100%;"></textarea>';
-   echo '<input name="wpam_nm_tags" id="wpam_nm_tags" type="text" style="width:100%;" value="' . __('Tags (seperate by comma)', 'wp_admin_blog') . '" onblur="if(this.value==' . $str . $str . ') this.value=' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ';" onfocus="if(this.value==' . $str . __('Tags (seperate by comma)', 'wp_admin_blog') . $str . ') this.value=' . $str . $str . ';" />';
+   $name = __('Tags (separate by comma)', 'wp_admin_blog');
+   echo '<input name="wpam_nm_tags" id="wpam_nm_tags" type="text" style="width:100%;" value="' . $name . '" onblur="if(this.value==' . $str . $str . ') this.value=' . $str . $name . $str . ';" onfocus="if(this.value==' . $str . $name . $str . ') this.value=' . $str . $str . ';" />';
    echo '<table style="width:100%; border-bottom:1px solid rgb(223 ,223,223); padding:10px;">';
    echo '<tr>';
    // Add message options

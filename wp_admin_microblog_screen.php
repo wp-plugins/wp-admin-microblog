@@ -292,7 +292,7 @@ function wp_admin_blog_page() {
             <div class="wpam_media_buttons" style="text-align:right;"><?php echo wp_admin_blog_media_buttons(); ?></div>
             <div id="postdiv" class="postarea" style="display:block;">
             <textarea name="wpam_nm_text" id="wpam_nm_text" style="width:100%;" rows="4"></textarea>
-            <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate by comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>') this.value='';" /></p>
+            <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (separate by comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (separate by comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (separate by comma)', 'wp_admin_blog'); ?>') this.value='';" /></p>
             </div>
             <p style="text-align:right; float:right;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" /><p>
             <?php if ( current_user_can( 'use_wp_admin_microblog_bp' ) || current_user_can( 'use_wp_admin_microblog_sticky' ) ) { ?>
