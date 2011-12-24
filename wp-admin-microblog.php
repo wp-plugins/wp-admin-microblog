@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 1.3.0
+Version: 2.0.0
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
-Min WP Version: 3.0
-Max WP Version: 3.2.1
+Min WP Version: 3.3
+Max WP Version: 3.3
 */
 
 /*
@@ -49,13 +49,17 @@ if ( $wpam_blog_name == false ) {
      $wpam_blog_name = 'Microblog';
 }
 
-// Define menus
+// includes
+require_once('wp_admin_microblog_screen.php');
+require_once('wp_admin_microblog_settings.php');
+
+// Define menu
 function wp_admin_blog_menu() {
    global $wpam_blog_name;
-   add_menu_page(__('Blog','wp_admin_blog'), $wpam_blog_name,'use_wp_admin_microblog', __FILE__, 'wp_admin_blog_page', WP_PLUGIN_URL . '/wp-admin-microblog/images/logo.png');
-}
-function wp_admin_blog_add_menu_settings() {
-   add_options_page(__('WP Admin Microblog Settings','wp_admin_blog'),'WP Admin Microblog','administrator','wp-admin-blog', 'wp_admin_blog_settings');
+   global $wpam_admin_page;
+   $wpam_admin_page = add_menu_page(__('Blog','wp_admin_blog'), $wpam_blog_name,'use_wp_admin_microblog', __FILE__, 'wp_admin_blog_page', WP_PLUGIN_URL . '/wp-admin-microblog/images/logo.png');
+   add_action("load-$wpam_admin_page", 'wp_admin_blog_add_help_tab');
+   add_submenu_page('wp-admin-microblog/wp-admin-microblog.php', __('Settings','wp_admin_blog'), __('Settings','wp_admin_blog'), 'administrator', 'wp-admin-microblog/settings.php', 'wp_admin_blog_settings');
 }
 
 /** 
@@ -370,10 +374,10 @@ function wp_admin_blog_page_menu ($number_entries, $entries_per_page, $current_p
 
       // return
       if ($type == 'top') {
-         return '<div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('entries','wp_admin_blog') . '</span> ' . $back_links . '' . $page_input . '' . $next_links . '</div>';
+         return '<div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('Entries','wp_admin_blog') . '</span> ' . $back_links . '' . $page_input . '' . $next_links . '</div>';
       }
       else {
-         return '<div class="tablenav"><div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('entries','wp_admin_blog') . '</span> ' . $back_links . ' ' . $current_page . ' ' . __('of','wp_admin_blog') . ' ' . $num_pages . ' ' . $next_links . '</div></div>';
+         return '<div class="tablenav"><div class="tablenav-pages"><span class="displaying-num">' . ($entry_limit + 1) . ' - ' . $anz2 . ' ' . __('of','wp_admin_blog') . ' ' . $number_entries . ' ' . __('Entries','wp_admin_blog') . '</span> ' . $back_links . ' ' . $current_page . ' ' . __('of','wp_admin_blog') . ' ' . $num_pages . ' ' . $next_links . '</div></div>';
       }	
    }
 }
@@ -501,6 +505,7 @@ function wp_admin_blog_widget_function() {
    $user = $current_user->ID;
    $str = "'";
    $text = isset( $_POST['wp_admin_blog_edit_text'] ) ? wp_admin_blog_sec_var($_POST['wp_admin_blog_edit_text']) : '';
+   $sticky_for_dash = get_option('wp_admin_blog_sticky_for_dash');
    
    // actions
    if (isset($_POST['wpam_nm_submit'])) {
@@ -567,8 +572,8 @@ function wp_admin_blog_widget_function() {
    echo '</table>';
    echo '</div>';
 
-   echo '<table border="0" cellpadding="0" cellspacing="0" width="100%">';
-   if ( get_option('wp_admin_blog_sticky_for_dash') == 'true' ) {
+   echo '<table border="0" cellpadding="0" cellspacing="0" width="100%" class="wpam-dashboard">';
+   if ( $sticky_for_dash == 'true' ) {
      $sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY is_sticky DESC, post_ID DESC LIMIT 0, 5";   
    }
    else {
@@ -600,37 +605,38 @@ function wp_admin_blog_widget_function() {
             $rpl = $rep->post_parent;
          }
       }
-      // Handles post parent
-      if ($post->post_parent == '0') {
-              $post->post_parent = $post->post_ID;
-      }
       // sticky post options
       // change background color for sticky posts
       $class = 'wpam_normal';
-      if ( $post->is_sticky == 1  ) {
+      if ( $post->is_sticky == 1 && $sticky_for_dash == 'true' ) {
           $class = 'wpam_sticky';
       }
       $sticky_option = '';
-      if ( current_user_can( 'use_wp_admin_microblog_sticky' ) && get_option('wp_admin_blog_sticky_for_dash') == 'true' ) {
+      if ( current_user_can( 'use_wp_admin_microblog_sticky' ) && $sticky_for_dash == 'true' && $post->post_parent == 0 ) {
           if ( $post->is_sticky == 0 ) {
-               $sticky_option = '<a href="index.php?wp_admin_blog_add=' . $post->post_ID . '"" title="' . __('Sticky this message','wp_admin_blog') . '">' . __('sticky','wp_admin_blog') . '</a> | ';
+               $sticky_option = '<a href="index.php?wp_admin_blog_add=' . $post->post_ID . '"" title="' . __('Sticky this message','wp_admin_blog') . '">' . __('Sticky','wp_admin_blog') . '</a> | ';
           }
           else {
                $sticky_option = '<a href="index.php?wp_admin_blog_remove=' . $post->post_ID . '"" title="' . __('Unsticky this message','wp_admin_blog') . '">' . __('Unsticky','wp_admin_blog') . '</a> | ';
           }
       }
+      // Handles post parent
+      if ($post->post_parent == 0) {
+          $post->post_parent = $post->post_ID;
+      }
       // Message Menu
       if ($count_rep != 0) {
-              $edit_button2 = ' | ' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '';
+          $edit_button2 = ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;rpl=' . $post->post_parent . '" title="' . _n( 'One Reply', $count_rep . ' Replies', $count_rep, 'wp_admin_blog' ) . '">' . $count_rep . ' ' . __( 'Replies', 'wp_admin_blog' ) . '</a>';
       }
       // Show message edit options if the user is the author of the message or the blog admin
       if ( $post->user == $user || current_user_can('manage_options') ) {
-              $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
+          $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="index.php?wp_admin_blog_delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
       }
       $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $str . '' . $post->post_parent . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
       $message_date = human_time_diff( mktime($time[0][3], $time[0][4], $time[0][5], $time[0][1], $time[0][2], $time[0][0] ), current_time('timestamp') ) . ' ' . __( 'ago', 'wp_admin_blog' );
       echo '<tr class="' . $class . '">';
-      echo '<td style="border-bottom:1px solid rgb(223 ,223,223); padding:3px 5px 3px 5px;">';
+      echo '<td style="border-bottom:1px solid rgb(223,223,223); padding: 12px 0 0 5px;" valign="top" width="40"><span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 30) . '</span></td>';
+      echo '<td style="border-bottom:1px solid rgb(223,223,223); padding: 0 5px 0 0;">';
       echo '<div id="wp_admin_blog_message_' . $post->post_ID . '"><p style="color:#AAAAAA;">' . $message_date . ' | ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>';
       echo '<p>' . $message_text . '</p>';
       echo '<div class="wpam-row-actions" style="font-size:11px; padding: 0 0 10px 0; margin:0;">' . $edit_button . '</div></div>';
@@ -656,601 +662,6 @@ function wp_admin_blog_add_widgets() {
           $title = '<a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none; font-size:12px; font-weight:bold; color:#464646;" title="' . __('New Message','wp_admin_blog') . '">' . $name . ' <img src="' .  WP_PLUGIN_URL . '/wp-admin-microblog/images/document-new-6.png' . '" heigth="12" width="12" /></a>';
           wp_add_dashboard_widget('wp_admin_blog_dashboard_widget', '' . $title . '', 'wp_admin_blog_widget_function');
      }
-}
-
-/**
- * Option Page
- * @global type $wp_roles 
- */
-function wp_admin_blog_settings () {
-     // run the updater
-     wp_admin_blog_update();
-     
-     if ( isset($_POST['save']) ) {
-          $option['admin_tags'] = wp_admin_blog_sec_var($_POST['admin_tags'], 'integer');
-          $option['admin_messages'] = wp_admin_blog_sec_var($_POST['admin_messages'], 'integer');
-          $option['auto_reply'] = wp_admin_blog_sec_var($_POST['auto_reply']);
-          $option['media_upload'] = wp_admin_blog_sec_var($_POST['media_upload']);
-          $option['name_blog'] = wp_admin_blog_sec_var($_POST['name_blog']);
-          $option['name_widget'] = wp_admin_blog_sec_var($_POST['name_widget']);
-          $userrole = $_POST['userrole'];
-          $blog_post = $_POST['blog_post'];
-          $sticky = $_POST['sticky'];
-          $option['sticky_for_dash'] = wp_admin_blog_sec_var($_POST['sticky_for_dash']);
-          wp_admin_blog_update_options($option, $userrole, $blog_post, $sticky);
-          echo '<div class="updated"><p>' . __('Settings are changed. Please note that access changes are visible, until you have reloaded this page a secont time.','wp_admin_blog') . '</p></div>';
-     }
-     
-     $name_blog = !get_option('wp_admin_blog_name') ? 'Microblog' : get_option('wp_admin_blog_name');
-     $name_widget = !get_option('wp_admin_blog_name_widget') ? 'Microblog' : get_option('wp_admin_blog_name_widget');
-     $admin_tags = !get_option('wp_admin_blog_number_tags') ? 50 : get_option('wp_admin_blog_number_tags');
-     $admin_messages = !get_option('wp_admin_blog_number_messages') ? 10 : get_option('wp_admin_blog_number_messages');
-     $auto_reply = !get_option('wp_admin_blog_auto_reply') ? 'false' : get_option('wp_admin_blog_auto_reply');
-     $media_upload = !get_option('wp_admin_blog_media_upload') ? 'false' : get_option('wp_admin_blog_media_upload');
-     $sticky_for_dash = !get_option('wp_admin_blog_sticky_for_dash') ? 'false' : get_option('wp_admin_blog_sticky_for_dash');
-
-     ?>
-     <div class="wrap">
-     <h2><?php _e('WP Admin Microblog Settings','wp_admin_blog'); ?></h2>
-     <form name="form1" id="form1" method="post" action="options-general.php?page=wp-admin-blog">
-     <input name="page" type="hidden" value="wp-admin-blog" />
-     <h3><?php _e('General options','wp_admin_blog'); ?></h3>
-     <table class="form-table">
-        <tr>
-             <th scope="row"><?php _e('Name of the Microblog','wp_admin_blog'); ?></th>
-             <td style="width: 180px;"><input name="name_blog" type="text" value="<?php echo $name_blog; ?>" /></td>
-             <td><em><?php _e('Default: Microblog','wp_admin_blog'); ?></em></td>
-        </tr>
-        <tr>
-             <th scope="row"><?php _e('Name of the dashboard widget','wp_admin_blog'); ?></th>
-             <td><input name="name_widget" type="text" value="<?php echo $name_widget; ?>" /></td>
-             <td><em><?php _e('Default: Microblog','wp_admin_blog'); ?></em></td>
-        </tr>
-        <tr>
-             <th scope="row"><?php _e('Number of tags','wp_admin_blog'); ?></th>
-             <td><input name="admin_tags" type="text" value="<?php echo $admin_tags; ?>" /></td>
-             <td><em><?php _e('Default: 50','wp_admin_blog'); ?></em></td>
-        </tr>
-        <tr>
-             <th scope="row"><?php _e('Number of messages per page','wp_admin_blog'); ?></th>
-             <td><input name="admin_messages" type="text" value="<?php echo $admin_messages; ?>"/></td>
-             <td><em><?php _e('Default: 10','wp_admin_blog'); ?></em></td>
-        </tr>
-        <tr>
-             <th scope="row"><?php _e('Auto notification','wp_admin_blog'); ?></th>
-             <td><select name="auto_reply">
-                <?php
-                if ($auto_reply == 'true') {
-                echo '<option value="true" selected="selected">' . __('yes','wp_admin_blog') . '</option>';
-                     echo '<option value="false">' . __('no','wp_admin_blog') . '</option>';
-                }
-                else {
-                     echo '<option value="true">' . __('yes','wp_admin_blog') . '</option>';
-                     echo '<option value="false" selected="selected">' . __('no','wp_admin_blog') . '</option>';
-                } 
-                ?>
-             </select></td>
-             <td><em><?php _e('Activate this option and the plugin insert in every reply the string for the auto e-mail notification','wp_admin_blog'); ?></em></td>
-         </tr>
-         <tr>
-             <th scope="row"><?php _e('Media upload for the dashboard widget','wp_admin_blog'); ?></th>
-             <td><select name="media_upload">
-                <?php
-                if ($media_upload == 'true') {
-                    echo '<option value="true" selected="selected">' . __('yes','wp_admin_blog') . '</option>';
-                    echo '<option value="false">' . __('no','wp_admin_blog') . '</option>';
-                }
-                else {
-                    echo '<option value="true">' . __('yes','wp_admin_blog') . '</option>';
-                    echo '<option value="false" selected="selected">' . __('no','wp_admin_blog') . '</option>';
-                } 
-                ?>
-             </select></td>
-             <td><em><?php _e('Activate this option to use the media upload for the WP Admin Microblog dashboard widget. If you use it, please notify, that the media upload will not work correctly for QuickPress.','wp_admin_blog'); ?></em></td>
-         </tr>
-     </table>
-     <h3><?php _e('Access options','wp_admin_blog'); ?></h3>
-     <table class="form-table">
-         <tr>
-              <th scope="row"><?php _e('Access for','wp_admin_blog'); ?></th>
-              <td style="width: 180px;">
-              <select name="userrole[]" id="userrole" multiple="multiple" style="height:80px;">
-                  <?php
-                   global $wp_roles;
-                   foreach ($wp_roles->role_names as $roledex => $rolename) {
-                       $role = $wp_roles->get_role($roledex);
-                       $select = $role->has_cap('use_wp_admin_microblog') ? 'selected="selected"' : '';
-                       echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
-                   }
-                   ?>
-              </select>
-              </td>
-              <td><em><?php _e('Select each user role which has access to WP Admin Microblog.','wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select more than one.','wp_admin_blog'); ?></em></td>
-         </tr>
-         <tr>
-              <th scope="row"><?php _e('"Message as a blog post"-function for','wp_admin_blog'); ?></th>
-              <td>
-              <select name="blog_post[]" id="blog_post" multiple="multiple" style="height:80px;">
-                  <?php
-                   foreach ($wp_roles->role_names as $roledex => $rolename) {
-                       $role = $wp_roles->get_role($roledex);
-                       $select = $role->has_cap('use_wp_admin_microblog_bp') ? 'selected="selected"' : '';
-                       echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
-                   }
-                   ?>
-              </select>
-              </td>
-              <td><em><?php _e('Select each user role which can use the "Message as a blog post"-function.','wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select more than one.','wp_admin_blog'); ?></em></td>
-         </tr>
-     </table>
-     <h3><?php _e('Sticky message options','wp_admin_blog'); ?></h3>
-     <table class="form-table">
-         <tr>
-              <th scope="row"><?php _e('"Sticky messages"-function for','wp_admin_blog'); ?></th>
-              <td style="width: 180px;">
-                   <select name="sticky[]" id="sticky" multiple="multiple" style="height:80px;">
-                        <?php
-                        foreach ($wp_roles->role_names as $roledex => $rolename) {
-                            $role = $wp_roles->get_role($roledex);
-                            $select = $role->has_cap('use_wp_admin_microblog_sticky') ? 'selected="selected"' : '';
-                            echo '<option value="'.$roledex.'" '.$select.'>'.$rolename.'</option>';
-                        }
-                        ?>
-                   </select>
-              </td>
-              <td><em><?php _e('Select each user role which can add sticky messages.', 'wp_admin_blog'); ?><br /><?php _e('Use &lt;Ctrl&gt; key to select more than one.','wp_admin_blog'); ?></em></td>
-         </tr> 
-         <tr>
-              <th scope="row"><?php _e('Sticky messages for the dashboard widget','wp_admin_blog'); ?></th>
-              <td>
-                   <select name="sticky_for_dash">
-                     <?php
-                     if ($sticky_for_dash == 'true') {
-                         echo '<option value="true" selected="selected">' . __('yes','wp_admin_blog') . '</option>';
-                         echo '<option value="false">' . __('no','wp_admin_blog') . '</option>';
-                     }
-                     else {
-                         echo '<option value="true">' . __('yes','wp_admin_blog') . '</option>';
-                         echo '<option value="false" selected="selected">' . __('no','wp_admin_blog') . '</option>';
-                     } 
-                     ?>
-                   </select>
-              </td>
-              <td><em><?php _e('Select `yes` to display sticky messages in the dashboard widget.','wp_admin_blog'); ?></em></td>
-         </tr>
-     </table>
-     <p class="submit">
-     <input type="submit" name="save" id="save" class="button-primary" value="<?php _e('Save Changes', 'wp_admin_blog') ?>" />
-     </p>
-     </form>
-     </div>
-     <?php
-}
-/** 
- * Main Page
- * @global type $current_user
- * @global type $wpdb
- * @global string $admin_blog_posts
- * @global string $admin_blog_tags
- * @global string $admin_blog_relations
- * @global type $wpam_blog_name Main-Page
- */
-function wp_admin_blog_page() {
-   global $current_user;
-   global $wpdb;
-   global $admin_blog_posts;
-   global $admin_blog_tags;
-   global $admin_blog_relations;
-   global $wpam_blog_name;
-   get_currentuserinfo();
-   $user = $current_user->ID;
-   
-   // run the updater
-   wp_admin_blog_update();
-   
-   // edit post fields
-   $text = isset( $_GET['wp_admin_blog_edit_text'] ) ? wp_admin_blog_sec_var($_GET['wp_admin_blog_edit_text']) : '';
-   $edit_message_ID = isset( $_GET['wp_admin_blog_message_ID'] ) ? (int) $_GET['wp_admin_blog_message_ID'] : 0;
-   $parent_ID = isset( $_GET['wp_admin_blog_parent_ID'] ) ? (int) $_GET['wp_admin_blog_parent_ID'] : 0;
-   $delete = isset( $_GET['delete'] ) ? (int) $_GET['delete'] : 0;
-   $remove = isset( $_GET['remove'] ) ? (int) $_GET['remove'] : 0;
-   $add = isset( $_GET['add'] ) ? (int) $_GET['add'] : 0;
-   
-   // filter
-   $author = isset( $_GET['author'] ) ? wp_admin_blog_sec_var($_GET['author']) : '';
-   $tag = isset( $_GET['tag'] ) ? wp_admin_blog_sec_var($_GET['tag']) : '';
-   $search = isset( $_GET['search'] ) ? wp_admin_blog_sec_var($_GET['search']) : '';
-   $rpl = isset( $_GET['rpl'] ) ? (int) $_GET['rpl'] : 0;
- 
-   // Number of messages
-   if ( !get_option('wp_admin_blog_number_messages') ) { $number_messages = 10; }
-   else { $number_messages = get_option('wp_admin_blog_number_messages'); }
-   // Auto reply
-   if ( !get_option('wp_admin_blog_auto_reply') ) { $auto_reply = 'false'; }
-   else { $auto_reply = get_option('wp_admin_blog_auto_reply'); }
-   // Handles limits 
-   if (isset($_GET['limit'])) {
-      $curr_page = (int)$_GET['limit'] ;
-      if ( $curr_page <= 0 ) {
-         $curr_page = 1;
-      }
-      $message_limit = ( $curr_page - 1 ) * $number_messages;
-   }
-   else {
-      $message_limit = 0;
-      $curr_page = 1;
-   }
-   // Handles actions
-   if (isset($_POST['send'])) {
-      // new_post fields
-      $content = isset( $_POST['wpam_nm_text'] ) ? wp_admin_blog_sec_var($_POST['wpam_nm_text']) : '';
-      $headline = isset( $_POST['headline'] ) ? wp_admin_blog_sec_var($_POST['headline']) : '';
-      $tags = isset( $_POST['tags'] ) ? wp_admin_blog_sec_var($_POST['tags']) : '';
-      $is_sticky = isset( $_POST['is_sticky'] ) ? 1 : 0;
-      
-      // Add new message
-      wp_admin_blog_add_message($content, $user, $tags, 0, $is_sticky);
-      if ( isset( $_POST['as_wp_post'] ) ) {
-         wp_admin_blog_add_as_wp_post($content, $headline, $user, $tags);
-      }
-      $content = "";
-   }	
-   if ( $delete != 0 ) {
-      wp_admin_blog_del_message($delete);
-   }
-   if ( $remove != 0 ) {
-      wp_admin_blog_update_sticky($remove, 0);  
-   }
-   if ( $add != 0 ) {
-      wp_admin_blog_update_sticky($add, 1);    
-   }
-   if (isset($_GET['wp_admin_blog_edit_message_submit'])) {
-      wp_admin_blog_update_message($edit_message_ID, $text);
-   }
-   if (isset($_GET['wp_admin_blog_reply_message_submit'])) {
-      wp_admin_blog_add_message($text, $user, '', $parent_ID, 0);
-   }
-   ?>
-    <div class="wrap" style="max-width:1200px; min-width:780px; width:96%; padding-top:10px;">
-    <h2><?php echo $wpam_blog_name;?> <span class="tp_break">|</span> <small><a onclick="wpam_showhide('wpam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('Help','wp_admin_blog'); ?></a></small></h2>
- <div id="wpam_hilfe_anzeigen">
-   <h3 class="wpam_help"><?php _e('Help','wp_admin_blog'); ?></h3>
-        <p class="wpam_help_h"><?php _e('E-mail notification','wp_admin_blog'); ?></p>
-        <p class="wpam_help_t"><?php _e('If you will send your message as an E-Mail to any user, so write @username (example: @admin)','wp_admin_blog'); ?></p>
-        <p class="wpam_help_h"><?php _e('Text formatting','wp_admin_blog'); ?></p>
-        <p class="wpam_help_t"><?php _e('You can use simple bbcodes: [b]bold[/b], [i]italic[/i], [u]underline[/u], [s]strikethrough[/s], [red]red[/red], [blue]blue[/blue], [green]green[/green], [orange]orange[/orange]. Combinations like [red][s]text[/s][/red] are possible. The using of HTML tags is not possible.','wp_admin_blog'); ?></p>
-        <p class="wpam_help_c"><strong><a onclick="wpam_showhide('wpam_hilfe_anzeigen')" style="cursor:pointer;"><?php _e('close','wp_admin_blog'); ?></a></strong></p>
-    </div>
-    <div style="width:31%; float:right; padding-right:1%;">
-    <form name="blog_selections" method="get" action="admin.php">
-    <input name="page" type="hidden" value="wp-admin-microblog/wp-admin-microblog.php" />
-    <input name="author" type="hidden" value="<?php echo $author; ?>" />
-    <input name="tag" type="hidden" value="<?php echo $tag; ?>" />
-    <table class="widefat">
-    <thead>
-        <tr>
-            <th><?php
-              if ($search != "") { ?>
-            	<label for="suche_abbrechen" title="<?php _e('Delete the search from filter','wp_admin_blog'); ?>"><?php _e('Search', 'wp_admin_blog'); ?><a id="suche_abbrechen" href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=<?php echo $author; ?>&amp;search=&amp;tag=<?php echo $tag;?>" style="text-decoration:none; color:#FF9900;" title="<?php _e('Delete the search from filter','wp_admin_blog'); ?>"> X</a></label><?php 
-              }
-              else {
-                 _e('Search', 'wp_admin_blog');
-              }?>
-            </th>
-        </tr>
-        <tr>
-            <td>
-            <input name="search" type="text"  value="<?php if ($search != "") { echo $search; } else { _e('Search word', 'wp_admin_blog'); }?>" onblur="if(this.value=='') this.value='<?php _e('Search word', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Search word', 'wp_admin_blog'); ?>') this.value='';"/>
-            <input name="search_init" type="submit" class="button-secondary" value="<?php _e('Go', 'wp_admin_blog');?>"/>
-            </td>
-        </tr>    
-    </thead>
-    </table>
-    <p style="margin:0px; font-size:2px;">&nbsp;</p>
-    <table class="widefat">
-    <thead>
-        <tr>
-            <th><?php _e('Tags', 'wp_admin_blog');?></th>
-        </tr>
-        <tr>
-            <td><div style="padding:5px;">
-             <?php
-                 // number of tags
-                 if ( !get_option('wp_admin_blog_number_tags') ) { $limit = 50; }
-                 else { $limit = get_option('wp_admin_blog_number_tags'); }
-                 // font sizes
-                 $maxsize = 35;
-                 $minsize = 11;
-                 // Count number of tags
-                 $sql = "SELECT anzahlTags FROM ( SELECT COUNT(*) AS anzahlTags FROM " . $admin_blog_relations . " GROUP BY " . $admin_blog_relations . ".`tag_ID` ORDER BY anzahlTags DESC ) as temp1 GROUP BY anzahlTags ORDER BY anzahlTags DESC";
-                 // Count all tags and find max, min
-                 $sql = "SELECT MAX(anzahlTags) AS max, min(anzahlTags) AS min, COUNT(anzahlTags) as gesamt FROM (".$sql.") AS temp";
-                 $tagcloud_temp = $wpdb->get_row($sql, ARRAY_A);
-                 $max = $tagcloud_temp['max'];
-                 $min = $tagcloud_temp['min'];
-                 $insgesamt = $tagcloud_temp['gesamt'];
-                 // if there are tags in database
-                 if ($insgesamt != 0) {
-                         // compose tags and their numbers
-                    $sql = "SELECT tagPeak, name, tag_ID FROM ( SELECT COUNT(b.tag_ID) as tagPeak, t.name AS name,  t.tag_ID as tag_ID FROM " . $admin_blog_relations . " b LEFT JOIN " . $admin_blog_tags . " t ON b.tag_ID = t.tag_ID GROUP BY b.tag_ID ORDER BY tagPeak DESC LIMIT " . $limit . " ) AS temp WHERE tagPeak>=".$min." ORDER BY name";
-                    $temp = $wpdb->get_results($sql, ARRAY_A);
-                    // create a cloud
-                    foreach ($temp as $tagcloud) {
-                       // compute font size
-                       // offset for min
-                       if ($min == 1) {
-                          $min = 0;
-                       }
-                       $div = $max - $min;
-                       if ($div == 0) {
-                          $div = 1;
-                       }
-                       // Formula: max. font size*(current number - min number)/ (max number - min number)
-                       $size = floor(($maxsize*($tagcloud['tagPeak']-$min)/($div)));
-                       // offset for font size
-                       if ($size < $minsize) {
-                          $size = $minsize ;
-                       }
-                       // active tag
-                       if ($tagcloud['tag_ID'] == $tag){
-                          echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '" title="' . __('Delete the tag from filter','wp_admin_blog') . '" style="color:#FF9900; text-decoration:underline;">' . $tagcloud['name'] . '</a></span> '; 
-                       }
-                       else{
-                          echo '<span style="font-size:' . $size . 'px;"><a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $author . '&amp;search=' . $search . '&amp;tag=' . $tagcloud['tag_ID'] . '" title="' . __('Show related messages','wp_admin_blog') . '">' . $tagcloud['name'] . '</a></span> '; 
-                       }
-                    }
-                 }
-                 else {
-                    _e('No tags available','wp_admin_blog');
-                 }?>
-             </div>     
-            </td>
-        </tr>
-    </thead>
-    </table>
-    <p style="margin:0px; font-size:2px;">&nbsp;</p>
-    <table class="widefat">
-    <thead>
-        <tr>
-            <th><?php _e('User', 'wp_admin_blog');?></th>
-        </tr>
-        <tr>
-            <td>
-       	    <?php
-            $sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
-            $users = $wpdb->get_results($sql);
-            foreach ($users as $users) {
-                 $user_info = get_userdata($users->user);
-                 $name = '' . $user_info->display_name . ' (' . $user_info->user_login . ')';
-                 if ($author == $user_info->ID) {
-                         echo '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . __('Delete user as filter','wp_admin_blog') . '" style="padding:3px; border-bottom:2px solid #FF9900;">';
-                 }
-                 else {
-                         echo '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;author=' . $user_info->ID . '&amp;search=' . $search . '&amp;tag=' . $tag . '" title="' . $name . '" style="padding:3px;">';
-                 }
-                 echo get_avatar($user_info->ID, 35);
-                 echo '</a>';
-            }
-            ?>
-            </td>
-         </tr>   
-    </thead>
-    </table>
-    </form>
-    </div>
-    <div style="width:66%; float:left; padding-right:1%;">
-    <form name="new_post" method="post" action="admin.php?page=wp-admin-microblog/wp-admin-microblog.php" id="new_post_form">
-    <table class="widefat">
-    <thead>
-        <tr>
-            <th><?php _e('Your Message', 'wp_admin_blog');?></th>
-        </tr>
-        <tr>
-            <td>
-            <div class="wpam_media_buttons" style="text-align:right;"><?php echo wp_admin_blog_media_buttons(); ?></div>
-            <div id="postdiv" class="postarea" style="display:block;">
-            <textarea name="wpam_nm_text" id="wpam_nm_text" style="width:100%;" rows="4"></textarea>
-            <p><input name="tags" type="text" style="width:100%;" value="<?php _e('Tags (seperate by comma)', 'wp_admin_blog');?>" onblur="if(this.value=='') this.value='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>';" onfocus="if(this.value=='<?php _e('Tags (seperate by comma)', 'wp_admin_blog'); ?>') this.value='';" /></p>
-            </div>
-            <p style="text-align:right; float:right;"><input name="send" type="submit" class="button-primary" value="<?php _e('Send', 'wp_admin_blog'); ?>" /><p>
-            <?php if ( current_user_can( 'use_wp_admin_microblog_bp' ) || current_user_can( 'use_wp_admin_microblog_sticky' ) ) { ?>
-            <p style="float:left; padding: 5px;"><a onclick="javascript:wpam_showhide('wpam_message_options')" style="cursor:pointer; font-weight:bold;">+ <?php _e('Options', 'wp_admin_blog'); ?></a></p>
-            <table style="width:100%; display: none; float:left;" id="wpam_message_options">
-                <?php if ( current_user_can( 'use_wp_admin_microblog_sticky' ) ) { ?> 
-            	<tr>
-                     <td style="border-bottom-width:0px;"><input name="is_sticky" id="is_sticky" type="checkbox"/> <label for="is_sticky"><?php _e('Sticky this message','wp_admin_blog'); ?></label></td>
-                </tr>
-                <?php } ?>
-                <?php if ( current_user_can( 'use_wp_admin_microblog_bp' ) ) { ?>
-                <tr>
-                     <td style="border-bottom-width:0px;"><input name="as_wp_post" id="as_wp_post" type="checkbox" onclick="javascript:wpam_showhide('span_headline')" /> <label for="as_wp_post"><?php _e('as WordPress blog post', 'wp_admin_blog');?></label> <span style="display:none;" id="span_headline">&rarr; <label for="headline"><?php _e('Title', 'wp_admin_blog');?> </label><input name="headline" id="headline" type="text" style="width:350px;" /></span></td>
-            	</tr>
-                <?php } ?>
-            </table>
-            <?php } ?> 
-           </td>
-    	</tr>
-    </thead>
-    </table>
-    </form>
-    <p style="margin:0px; font-size:2px;">&nbsp;</p>
-    <form name="all_messages" method="get">
-    <input name="page" type="hidden" value="wp-admin-microblog/wp-admin-microblog.php" />
-    <table class="widefat">
-    <thead>
-        <tr>
-            <th colspan="2">
-             <?php
-              if ( $search != '' || $author != '' || $tag != '' || $rpl != '' ) {
-                 echo '' . __('Search Results', 'wp_admin_blog') . ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php">' . __('Show all','wp_admin_blog') . '</a>';
-              }
-              else {
-                 echo '' . __('Messages', 'wp_admin_blog') . '';
-              }
-               ?>
-            </th>
-        </tr>
-         <?php
-         // build SQL requests
-         if ( $search != '' || $author != '' || $tag != '' ) {
-            $select = "SELECT DISTINCT p.post_ID, p.post_parent, p.text, p.date, p.user FROM " . $admin_blog_posts . " p
-                          LEFT JOIN " . $admin_blog_relations . " r ON r.post_ID = p.post_ID
-                          LEFT JOIN " . $admin_blog_tags . " t ON t.tag_ID = r.tag_ID";
-            // is author or user?
-            if ($author != '' && $search != '') {
-               $where = "WHERE p.user = '$author' AND p.text LIKE '%$search%'";
-            }
-            elseif ($author == '' && $search != '') {
-               $where = "WHERE p.text LIKE '%$search%'";
-            }
-            elseif ($author != '' && $search == '') {
-               $where = "WHERE p.user = '$author'";
-            }
-            else {
-               $where = "";
-            }
-            // is tag?
-            if ($tag != '') {
-               if ($where != "") {
-                  $where = $where . "AND t.tag_ID = $tag";
-               }
-               else {
-                  $where = "WHERE t.tag_ID = '$tag'";
-               }
-            }	
-            $sql = "" . $select . " " . $where . " ORDER BY p.post_ID DESC LIMIT $message_limit, $number_messages";
-            $test_sql = "" . $select . " " . $where . "";				
-         }
-         // is replies?
-         elseif( $rpl != '' ) {
-            $sql = "SELECT * FROM " . $admin_blog_posts . " WHERE post_parent = '$rpl' OR post_ID = '$rpl' ORDER BY post_ID DESC LIMIT $message_limit, $number_messages";
-            $test_sql = "SELECT post_ID FROM " . $admin_blog_posts . " WHERE post_parent = '$rpl' OR post_ID = '$rpl'";
-         }
-         // Normal SQL
-         else {
-            $sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY is_sticky DESC, post_ID DESC LIMIT $message_limit, $number_messages";
-            $test_sql = "SELECT post_ID FROM " . $admin_blog_posts . "";
-         }
-         // Find number of entries
-         $test = $wpdb->query($test_sql);
-         if ($test == 0) {
-            echo '<tr><td>' . __('Sorry, no entries mached your criteria','wp_admin_blog') . '</td></tr>';
-         }
-         else {
-            // print menu
-            echo '<tr>';
-            echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . wp_admin_blog_page_menu($test, $number_messages, $curr_page, $message_limit, 'admin.php?page=wp-admin-microblog/wp-admin-microblog.php', 'search=' . $search . '&amp;author=' . $author . '&amp;tag=' . $tag . '') . '</div></td>';
-            echo '</tr>';
-            $message_date_old = '';
-            // Entries
-            $post = $wpdb->get_results($sql);
-            $sql = "SELECT COUNT(post_parent) AS gesamt, post_parent FROM " . $admin_blog_posts . " GROUP BY post_parent";
-            $replies = $wpdb->get_results($sql);
-            foreach ($post as $post) {
-               $user_info = get_userdata($post->user);
-               $edit_button = '';
-               $edit_button2 = '';
-               $count_rep = 0;
-               $rpl = 0;
-               $str = "'";
-               $today = false;
-               $time = wp_admin_blog_datumsplit($post->date);
-               $message_text = wp_admin_blog_replace_url($post->text);
-               $message_text = wp_admin_blog_replace_bbcode($message_text);
-               // Count Number of Replies
-               foreach ($replies as $rep) {
-                  if ($rep->post_parent == $post->post_ID) {
-                     $count_rep = $rep->gesamt + 1;
-                     $rpl = $rep->post_parent;
-                  }
-
-                  if ($rep->post_parent == $post->post_parent && $post->post_parent != 0) {
-                     $count_rep = $rep->gesamt + 1;
-                     $rpl = $rep->post_parent;
-                  }
-               }
-               // Handles german date format
-               if ( __('en','wp_admin_blog') == 'de') {
-                  $message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
-                  if ( date('d.m.Y') == $message_date ) {
-                     $today = true;
-                  }
-               }
-               else {
-                  $message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
-                  if ( date('Y-m-d') == $message_date ) {
-                     $today = true;
-                  }
-               }
-               // Handles post parent
-               if ($post->post_parent == '0') {
-                    $post->post_parent = $post->post_ID;
-               }
-               // sticky post options
-               // change background color for sticky posts
-               $class = 'wpam_normal';
-               if ( $post->is_sticky == 1  ) {
-                    $class = 'wpam_sticky';
-               }
-               // sticky menu options
-               $sticky_option = '';
-               if ( current_user_can( 'use_wp_admin_microblog_sticky' ) ) {
-                    if ( $post->is_sticky == 0 ) {
-                         $sticky_option = '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&add=' . $post->post_ID . '"" title="' . __('Sticky this message','wp_admin_blog') . '">' . __('Sticky','wp_admin_blog') . '</a> | ';
-                    }
-                    else {
-                         $sticky_option = '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&remove=' . $post->post_ID . '"" title="' . __('Unsticky this message','wp_admin_blog') . '">' . __('Unsticky','wp_admin_blog') . '</a> | ';
-                    }
-               }
-               // Message Menu
-               if ($count_rep != 0) {
-                  $edit_button2 = ' | <a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;rpl=' . $rpl . '" class="wpam_replies">' . $count_rep . ' ' . __('Replies','wp_admin_blog') . '</a>';
-               }
-               // Show message edit options if the user is the author of the message or the blog admin
-               if ( $post->user == $user || current_user_can('manage_options') ) {
-                  $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
-               }
-               $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $auto_reply . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
-               // Message date headlines
-               if ($message_date != $message_date_old) {
-                  if ($today == true) {
-                     echo '<tr><td colspan="2"><strong>' . __('Today','wp_admin_blog') . '</strong></td></tr>';
-                  }
-                  else {
-                     echo '<tr><td colspan="2"><strong>' . $message_date . '</strong></td></tr>';
-                  }
-               }
-               // get human time difference
-               $message_time = human_time_diff( mktime($time[0][3], $time[0][4], $time[0][5], $time[0][1], $time[0][2], $time[0][0] ), current_time('timestamp') ) . ' ' . __( 'ago', 'wp_admin_blog' );
-               // print messages
-               echo '<tr class="' . $class . '">';
-               echo '<td style="padding:10px; width:60px;">
-                               <span title="' . $user_info->display_name . ' (' . $user_info->user_login . ')">' . get_avatar($user_info->ID, 50) . '</span></td>';
-               echo '<td style="padding:10px;">
-                       <div id="wp_admin_blog_message_' . $post->post_ID . '">
-                          <p style="color:#AAAAAA;">' . $message_time . ' | ' . __('by','wp_admin_blog') . ' ' . $user_info->display_name . '' . $edit_button2 . '</p>
-                          <p>' . $message_text . '</p>
-                          <div class="wpam-row-actions">' . $edit_button . '</div>
-                       </div>
-                       <input name="wp_admin_blog_message_text" id="wp_admin_blog_message_text_' . $post->post_ID . '" type="hidden" value="' . $post->text . '" />';
-               echo '</td>';
-               echo '</tr>';
-               $message_date_old = $message_date;
-            }
-            // Page Menu
-            if ($test > $number_messages) {
-               echo '<tr>';
-               echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . wp_admin_blog_page_menu($test, $number_messages, $curr_page, $message_limit, 'admin.php?page=wp-admin-microblog/wp-admin-microblog.php', 'search=' . $search . '&amp;author=' . $author . '&amp;tag=' . $tag . '', 'bottom') . '</td>';
-               echo '</tr>';
-            }
-         }
-       ?>
-    </thead>
-    </table>
-    </form>
-    </div>
-    </div>
-	<?php
 }
 
 /*
@@ -1397,16 +808,17 @@ function wp_admin_blog_install () {
    if ( !get_option('wp_admin_blog_version') ) {
       add_option('wp_admin_blog_version', '1.2.0', '', 'no');
    }
-}
+}   
+
 // load language support
 function wp_admin_blog_language_support() {
    load_plugin_textdomain('wp_admin_blog', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 }
+
 // Register WordPress hooks
 register_activation_hook( __FILE__, 'wp_admin_blog_install');
 add_action('init', 'wp_admin_blog_language_support');
 add_action('admin_init','wp_admin_blog_header');
 add_action('admin_menu','wp_admin_blog_menu');
-add_action('admin_menu', 'wp_admin_blog_add_menu_settings');
 add_action('wp_dashboard_setup', 'wp_admin_blog_add_widgets' );
 ?>

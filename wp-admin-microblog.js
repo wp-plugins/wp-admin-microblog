@@ -7,6 +7,16 @@ function wpam_showhide(where) {
     	document.getElementById(where).style.display = "none";
     }
 }
+// for show replies
+function wpam_showAllReplies(id, number) {
+    name = "wpam-reply-sum-" + id;
+    document.getElementById(name).style.display = "none";
+    name = "wpam-reply-" + id;
+    for (i=1; i<= number; i++) {
+         name2 = name + "-" + i;
+         document.getElementById(name2).style.display = "";
+    }
+}
 // for editing messages
 function wpam_editMessage(post_ID) {
 	var parent = "wp_admin_blog_message_" + post_ID;
