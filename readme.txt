@@ -2,8 +2,8 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration
 Requires at least: 3.3
-Tested up to: 3.3
-Stable tag: 2.0.1
+Tested up to: 3.3.1
+Stable tag: 2.1.0
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -20,7 +20,7 @@ Use at your own risk. No warranty expressed or implied is provided.
 
 == Credits ==
 
-Copyright 2010-2011 by Michael Winkler
+Copyright 2010-2012 by Michael Winkler
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -56,10 +56,13 @@ With version 0.9.6 you can select in the options which user group can use this f
 = How can I send a message as e-mail notification? =
 If you will send your message via e-mail to any user, so write @username (example: @admin).
 
-= Can I add tags directly with a '#' before the tag ? =
-No, sorry. Inline tagging is comming soon.
+= How can I add tags to a message? =
+Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
 == Changelog ==
+= 2.1.0 - (14.02.2012) =
+* New: Hashtags are now available
+* New: More options for email notifications
 = 2.0.1 - (24.12.2011) =
 * Bugfix: Small spelling mistake
 = 2.0.0 - (24.12.2011) =
