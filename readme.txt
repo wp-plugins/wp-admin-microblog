@@ -2,8 +2,8 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration
 Requires at least: 3.3
-Tested up to: 3.3.1
-Stable tag: 2.1.0
+Tested up to: 3.4.1
+Stable tag: 2.2.0
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
