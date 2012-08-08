@@ -400,16 +400,17 @@ function wpam_header() {
 
 /**
  * Updater
+ * 
  * @global string $admin_blog_posts
  * @global class $wpdb
- * @since version 1.2.0
+ * @since 1.2.0
  */
 function wpam_update() {
    global $admin_blog_posts;
    global $admin_blog_meta;
    global $wpdb;
    $version = get_option('wp_admin_blog_version');
-   // Update to version 1.2.0
+   // Update to database version 1.2.0
    if ( $version == false ) {
       add_option('wp_admin_blog_version', '1.2.0', '', 'no');
       // Add is_sticky column
@@ -419,7 +420,7 @@ function wpam_update() {
           $wpdb->query("ALTER TABLE " . $admin_blog_posts . " ADD `is_sticky` INT NULL AFTER `user`");
       }
    }
-   // Update to version 2.1.0
+   // Update to database version 2.1.0
    if ( $version == false || $version == '1.2.0' ) {
       // Add meta table 
       if($wpdb->get_var("SHOW TABLES LIKE '$admin_blog_meta'") != $admin_blog_meta) {
@@ -452,6 +453,31 @@ function wpam_update() {
 }
 
 /**
+ * WPAM plugin activation
+ * @param boolean $network_wide
+ * @since 2.2.0
+ */
+function wpam_activation ( $network_wide ) {
+    global $wpdb;
+    // it's a network activation
+    if ( $network_wide ) {
+        $old_blog = $wpdb->blogid;
+        // Get all blog ids
+        $blogids = $wpdb->get_col($wpdb->prepare("SELECT `blog_id` FROM $wpdb->blogs"));
+        foreach ($blogids as $blog_id) {
+            switch_to_blog($blog_id);
+            wpam_install();
+        }
+        switch_to_blog($old_blog);
+        return;
+    } 
+    // it's a normal activation
+    else {
+        wpam_install();
+    }
+}
+
+/**
  * Installer
  * @global class $wpdb
  * @global type $wp_roles 
@@ -466,7 +492,10 @@ function wpam_install () {
       $wp_roles->add_cap('administrator', 'use_wp_admin_microblog');
    }
    if ( !$role->has_cap('use_wp_admin_microblog_bp') ) {
-           $wp_roles->add_cap('administrator', 'use_wp_admin_microblog_bp');
+      $wp_roles->add_cap('administrator', 'use_wp_admin_microblog_bp');
+   }
+   if ( !$role->has_cap('use_wp_admin_microblog_sticky') ) {
+      $wp_roles->add_cap('administrator', 'use_wp_admin_microblog_sticky');
    }
 
    // charset & collate like WordPress
@@ -479,6 +508,7 @@ function wpam_install () {
          $charset_collate .= " COLLATE $wpdb->collate";
       }	
    }
+   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');	
    // Post table
    $table_name = $wpdb->prefix . 'admin_blog_posts';
    if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
@@ -491,7 +521,7 @@ function wpam_install () {
                         `is_sticky` INT ,
                         PRIMARY KEY (post_ID)
                   ) $charset_collate;";
-      require_once(ABSPATH . 'wp-admin/upgrade-functions.php');		
+      
       dbDelta($sql);
    }
    // Tag table
@@ -501,8 +531,7 @@ function wpam_install () {
                         `tag_ID` INT UNSIGNED AUTO_INCREMENT ,
                         `name` VARCHAR (200) ,
                         PRIMARY KEY (tag_ID)
-                    ) $charset_collate;";
-      require_once(ABSPATH . 'wp-admin/upgrade-functions.php');			
+                    ) $charset_collate;";			
       dbDelta($sql);
    }
    // Relation
@@ -513,8 +542,7 @@ function wpam_install () {
                         `post_ID` INT ,
                         `tag_ID` INT ,
                         PRIMARY KEY (rel_ID)
-                    ) $charset_collate;";
-      require_once(ABSPATH . 'wp-admin/upgrade-functions.php');			
+                    ) $charset_collate;";		
       dbDelta($sql);
    }
    // Meta
@@ -526,8 +554,7 @@ function wpam_install () {
                         `value` LONGTEXT ,
                         `category` VARCHAR (200) ,
                         PRIMARY KEY (meta_ID)
-                    ) $charset_collate;";
-      require_once(ABSPATH . 'wp-admin/upgrade-functions.php');			
+                    ) $charset_collate;";		
       dbDelta($sql);
       $wpdb->query("INSERT INTO " . $wpdb->prefix . "admin_blog_meta (variable, value, category) VALUES ('blog_name', 'Microblog', 'system')");
       $wpdb->query("INSERT INTO " . $wpdb->prefix . "admin_blog_meta (variable, value, category) VALUES ('blog_name_widget', 'Microblog', 'system')");
@@ -559,7 +586,7 @@ function wpam_language_support() {
 }
 
 // Register WordPress hooks
-register_activation_hook( __FILE__, 'wpam_install');
+register_activation_hook( __FILE__, 'wpam_activation');
 add_action('init', 'wpam_language_support');
 add_action('admin_init','wpam_header');
 add_action('admin_menu','wpam_menu');

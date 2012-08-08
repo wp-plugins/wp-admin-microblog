@@ -36,6 +36,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+= Licence information of external ressources =
+* document-new-6.png  by Oxygen Icons 4.3.1 http://www.oxygen-icons.org/ (Licence: LPGL)
+
 == Installation ==
 
 1. Download the plugin.
@@ -60,6 +63,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
 == Changelog ==
+= 2.2.0 - (08.08.2012) =
+* New: Add support for network installations
 = 2.1.0 - (14.02.2012) =
 * New: Hashtags are now available
 * New: More options for email notifications
