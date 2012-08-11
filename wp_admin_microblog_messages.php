@@ -14,11 +14,16 @@ class wpam_message {
     function add_message ($content, $user, $parent, $is_sticky) {
         global $wpdb;
         global $admin_blog_posts;
-        global $admin_blog_tags;
-        global $admin_blog_relations;
         if ($content != '') {
             $content = nl2br($content);
             $post_time = current_time('mysql',0);
+            // check message duplications
+            $duplicate = $wpdb->get_var("SELECT `text` FROM $admin_blog_posts WHERE `text` = '$content' AND `post_parent` = '$parent' AND `user` = '$user'");
+            if ( $duplicate != "" ) {
+                if ( strlen($duplicate) == strlen($content) ) {
+                    return false;
+                }
+            }
             // insert message
             $wpdb->insert( $admin_blog_posts, array( 
                 'post_parent' => $parent, 
@@ -50,7 +55,7 @@ class wpam_message {
         $headers = 'From: ' . get_bloginfo() . ' <' . get_bloginfo('admin_email') . '>' . "\r\n\\";
         $subject = get_bloginfo() . ': ' .__('New message in wp admin micoblog','wp_admin_blog');
         
-        $sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
+        $sql = "SELECT DISTINCT user FROM $admin_blog_posts";
         $users = $wpdb->get_results($sql);
         foreach ($users as $element) {
             $user_info = get_userdata($element->user);
@@ -89,7 +94,7 @@ class wpam_message {
             for ($x = 0; $x < count($match[0]); $x++) {
                 $match[0][$x] = str_replace('#', '', $match[0][$x]);
                 $match[0][$x] = trim($match[0][$x]);
-                $sql = "SELECT `tag_ID` FROM " . $admin_blog_tags . " WHERE `name` = '" . $match[0][$x]  ."'";
+                $sql = "SELECT `tag_ID` FROM $admin_blog_tags WHERE `name` = '" . $match[0][$x]  ."'";
                 $check = $wpdb->query($sql);
                 // if not, then insert tag
                 if ($check == 0){
@@ -100,11 +105,10 @@ class wpam_message {
                     $new_tag_id = $wpdb->get_var($sql);
                 }
                 // check if the relation already exist
-                $test = "SELECT `post_ID` FROM " .$admin_blog_relations . " WHERE `post_ID` = ' $message_id' AND tag_ID = '$new_tag_id'";
-                $test = $wpdb->query($test);
+                $test = $wpdb->query("SELECT `post_ID` FROM $admin_blog_relations WHERE `post_ID` = '$message_id' AND `tag_ID` = '$new_tag_id'");
                 // if not, then insert the relation
                 if ($test == 0) {
-                    $sql = "INSERT INTO " .$admin_blog_relations . " (post_ID, tag_ID) VALUES ('$message_id', '$new_tag_id')";
+                    $sql = "INSERT INTO $admin_blog_relations (`post_ID`, `tag_ID`) VALUES ('$message_id', '$new_tag_id')";
                     $wpdb->query($sql);
                 }
             }
@@ -133,7 +137,7 @@ class wpam_message {
             $haystack = '#' . $row['name'];
             $search = strpos($haystack, $content);
             if ( $search === false ) {
-                $wpdb->query("DELETE FROM " . $admin_blog_relations . " WHERE `rel_ID` = '" . $row['rel_ID'] . "'");
+                $wpdb->query("DELETE FROM $admin_blog_relations WHERE `rel_ID` = '" . $row['rel_ID'] . "'");
             }
         }
     }
@@ -149,8 +153,8 @@ class wpam_message {
         global $wpdb;
         global $admin_blog_posts;
         global $admin_blog_relations;
-        $wpdb->query( "DELETE FROM " . $admin_blog_posts . " WHERE `post_ID` = '$message_ID'" );
-        $wpdb->query( "DELETE FROM " . $admin_blog_relations . " WHERE `post_ID` = '$message_ID'" );
+        $wpdb->query( "DELETE FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'" );
+        $wpdb->query( "DELETE FROM $admin_blog_relations WHERE `post_ID` = '$message_ID'" );
     }
     
     /** 
