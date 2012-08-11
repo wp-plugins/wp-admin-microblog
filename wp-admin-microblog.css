@@ -8,6 +8,8 @@ table.wpam-dashboard tr:hover .wpam-row-actions, div.wpam-blog-message:hover .wp
 .wpam_media_buttons a {padding:3px;}
 /* Messages */
 .wpam_sticky {background-color: #FFE7A1;}
+/* Tags */
+.wpam-tag {padding: 1px;}
 /* Others */
 table.wpam-replies {border-collapse: collapse; background-color: #EFEFEF; margin-top: 5px; width: 100%}
 table.wpam-replies tr {border:1px solid #DFDFDF;}
