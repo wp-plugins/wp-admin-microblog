@@ -2,8 +2,8 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration
 Requires at least: 3.3
-Tested up to: 3.4.1
-Stable tag: 2.2.1
+Tested up to: 3.4.2
+Stable tag: 2.2.2
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -63,8 +63,10 @@ If you will send your message via e-mail to any user, so write @username (exampl
 Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
 == Changelog ==
+= 2.2.2 - (25.10.2012) =
+* Bugfix: Fixed a incomplete call of wpam_message::add_message
 = 2.2.1 - (11.08.2012) =
-* Bugfix: Prevent messages duplications
+* Bugfix: Prevent message duplications
 = 2.2.0 - (08.08.2012) =
 * New: Add support for network installations
 = 2.1.0 - (14.02.2012) =

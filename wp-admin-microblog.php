@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 2.2.1
+Version: 2.2.2
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.3
-Max WP Version: 3.4.1
+Max WP Version: 3.4.2
 */
 
 /*
@@ -73,7 +73,7 @@ function wpam_menu() {
 function wpam_sec_var($var, $type = 'string') {
    $var = htmlspecialchars($var);
    if ($type == 'integer') {
-      settype($var, 'integer');
+      intval($var);
    }
    return $var;
 }
@@ -231,7 +231,7 @@ function wpam_widget_function() {
    }
    if (isset($_POST['wp_admin_blog_reply_message_submit'])) {
       $parent_ID = wpam_sec_var($_POST['wp_admin_blog_parent_ID'], 'integer');
-      wpam_message::add_message($text, $user, $parent_ID);
+      wpam_message::add_message($text, $user, $parent_ID, 0);
    }
    if (isset($_GET['wp_admin_blog_delete'])) {
       $delete = wpam_sec_var($_GET['wp_admin_blog_delete'], 'integer');
