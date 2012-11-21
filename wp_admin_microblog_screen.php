@@ -95,18 +95,18 @@ function wpam_page() {
    wpam_update();
    
    // edit post fields
-   $text = isset( $_GET['wp_admin_blog_edit_text'] ) ? wpam_sec_var($_GET['wp_admin_blog_edit_text']) : '';
-   $edit_message_ID = isset( $_GET['wp_admin_blog_message_ID'] ) ? (int) $_GET['wp_admin_blog_message_ID'] : 0;
-   $parent_ID = isset( $_GET['wp_admin_blog_parent_ID'] ) ? (int) $_GET['wp_admin_blog_parent_ID'] : 0;
-   $delete = isset( $_GET['delete'] ) ? (int) $_GET['delete'] : 0;
-   $remove = isset( $_GET['remove'] ) ? (int) $_GET['remove'] : 0;
-   $add = isset( $_GET['add'] ) ? (int) $_GET['add'] : 0;
+   $text = isset( $_POST['wp_admin_blog_edit_text'] ) ? wpam_sec_var($_POST['wp_admin_blog_edit_text']) : '';
+   $edit_message_ID = isset( $_POST['wp_admin_blog_message_ID'] ) ? intval($_POST['wp_admin_blog_message_ID']) : 0;
+   $parent_ID = isset( $_POST['wp_admin_blog_parent_ID'] ) ? intval($_POST['wp_admin_blog_parent_ID']) : 0;
+   $delete = isset( $_GET['delete'] ) ? intval($_GET['delete']) : 0;
+   $remove = isset( $_GET['remove'] ) ? intval($_GET['remove']) : 0;
+   $add = isset( $_GET['add'] ) ? intval($_GET['add']) : 0;
    
    // filter
    $author = isset( $_GET['author'] ) ? wpam_sec_var($_GET['author']) : '';
    $tag = isset( $_GET['tag'] ) ? wpam_sec_var($_GET['tag']) : '';
    $search = isset( $_GET['search'] ) ? wpam_sec_var($_GET['search']) : '';
-   $rpl = isset( $_GET['rpl'] ) ? (int) $_GET['rpl'] : 0;
+   $rpl = isset( $_GET['rpl'] ) ? intval($_GET['rpl']) : 0;
  
    // load system settings
    $number_messages = 10;
@@ -123,8 +123,8 @@ function wpam_page() {
    }
    
    // Handles limits 
-   if (isset($_GET['limit'])) {
-      $curr_page = (int)$_GET['limit'] ;
+   if (isset($_REQUEST['limit'])) {
+      $curr_page = intval($_REQUEST['limit']) ;
       if ( $curr_page <= 0 ) {
          $curr_page = 1;
       }
@@ -157,10 +157,10 @@ function wpam_page() {
    if ( $add != 0 ) {
       wpam_message::update_sticky($add, 1);    
    }
-   if (isset($_GET['wp_admin_blog_edit_message_submit'])) {
+   if (isset($_POST['wp_admin_blog_edit_message_submit'])) {
       wpam_message::update_message($edit_message_ID, $text);
    }
-   if (isset($_GET['wp_admin_blog_reply_message_submit'])) {
+   if (isset($_POST['wp_admin_blog_reply_message_submit'])) {
       wpam_message::add_message($text, $user, $parent_ID, 0);
    }
    ?>
@@ -206,9 +206,9 @@ function wpam_page() {
                  $maxsize = 35;
                  $minsize = 11;
                  // Count number of tags
-                 $sql = "SELECT anzahlTags FROM ( SELECT COUNT(*) AS anzahlTags FROM " . $admin_blog_relations . " GROUP BY " . $admin_blog_relations . ".`tag_ID` ORDER BY anzahlTags DESC ) as temp1 GROUP BY anzahlTags ORDER BY anzahlTags DESC";
+                 $sql = "SELECT anzahlTags FROM ( SELECT COUNT(*) AS anzahlTags FROM $admin_blog_relations GROUP BY $admin_blog_relations.`tag_ID` ORDER BY anzahlTags DESC ) as temp1 GROUP BY anzahlTags ORDER BY anzahlTags DESC";
                  // Count all tags and find max, min
-                 $sql = "SELECT MAX(anzahlTags) AS max, min(anzahlTags) AS min, COUNT(anzahlTags) as gesamt FROM (".$sql.") AS temp";
+                 $sql = "SELECT MAX(anzahlTags) AS max, min(anzahlTags) AS min, COUNT(anzahlTags) as gesamt FROM ($sql) AS temp";
                  $tagcloud_temp = $wpdb->get_row($sql, ARRAY_A);
                  $max = $tagcloud_temp['max'];
                  $min = $tagcloud_temp['min'];
@@ -216,7 +216,7 @@ function wpam_page() {
                  // if there are tags in database
                  if ($insgesamt != 0) {
                     // compose tags and their numbers
-                    $sql = "SELECT tagPeak, name, tag_ID FROM ( SELECT COUNT(b.tag_ID) as tagPeak, t.name AS name,  t.tag_ID as tag_ID FROM " . $admin_blog_relations . " b LEFT JOIN " . $admin_blog_tags . " t ON b.tag_ID = t.tag_ID GROUP BY b.tag_ID ORDER BY tagPeak DESC LIMIT " . $limit . " ) AS temp WHERE tagPeak>=".$min." ORDER BY name";
+                    $sql = "SELECT tagPeak, name, tag_ID FROM ( SELECT COUNT(b.tag_ID) as tagPeak, t.name AS name,  t.tag_ID as tag_ID FROM $admin_blog_relations b LEFT JOIN $admin_blog_tags t ON b.tag_ID = t.tag_ID GROUP BY b.tag_ID ORDER BY tagPeak DESC LIMIT $limit ) AS temp WHERE tagPeak>=$min ORDER BY name";
                     $temp = $wpdb->get_results($sql, ARRAY_A);
                     // create a cloud
                     foreach ($temp as $tagcloud) {
@@ -262,7 +262,7 @@ function wpam_page() {
             <td>
                  <ul class="wpam-user-list">
                  <?php
-                 $sql = "SELECT DISTINCT user FROM " . $admin_blog_posts . "";
+                 $sql = "SELECT DISTINCT user FROM $admin_blog_posts";
                  $users = $wpdb->get_results($sql);
                  foreach ($users as $users) {
                       $user_info = get_userdata($users->user);
@@ -325,8 +325,7 @@ function wpam_page() {
     </table>
     </form>
     <p style="margin:0px; font-size:2px;">&nbsp;</p>
-    <form name="all_messages" method="get">
-    <input name="page" type="hidden" value="wp-admin-microblog/wp-admin-microblog.php" />
+    <form name="all_messages" method="post">
     <table class="widefat">
     <thead>
         <tr>
@@ -346,9 +345,9 @@ function wpam_page() {
          $tags = $wpdb->get_results("SELECT `tag_id`, `name` FROM `$admin_blog_tags`", ARRAY_A);
          // build SQL requests
          if ( $search != '' || $author != '' || $tag != '' ) {
-            $select = "SELECT DISTINCT p.post_ID, p.post_parent, p.text, p.date, p.user, p.is_sticky FROM " . $admin_blog_posts . " p
-                          LEFT JOIN " . $admin_blog_relations . " r ON r.post_ID = p.post_ID
-                          LEFT JOIN " . $admin_blog_tags . " t ON t.tag_ID = r.tag_ID";
+            $select = "SELECT DISTINCT p.post_ID, p.post_parent, p.text, p.date, p.user, p.is_sticky FROM $admin_blog_posts p
+                          LEFT JOIN $admin_blog_relations r ON r.post_ID = p.post_ID
+                          LEFT JOIN $admin_blog_tags t ON t.tag_ID = r.tag_ID";
             // is author and search?
             if ($author != '' && $search != '') {
                $where = "WHERE p.user = '$author' AND p.text LIKE '%$search%'";
@@ -373,23 +372,23 @@ function wpam_page() {
                   $where = "WHERE t.tag_ID = '$tag'";
                }
             }	
-            $sql = "" . $select . " " . $where . " ORDER BY p.post_ID DESC LIMIT $message_limit, $number_messages";
-            $test_sql = "" . $select . " " . $where . "";				
+            $sql = "$select $where ORDER BY p.post_ID DESC LIMIT $message_limit, $number_messages";
+            $test_sql = "$select $where";				
          }
          // is replies?
          elseif( $rpl != '' ) {
-            $sql = "SELECT * FROM " . $admin_blog_posts . " WHERE `post_ID` = '$rpl' ORDER BY `post_ID` DESC LIMIT $message_limit, $number_messages";
-            $test_sql = "SELECT `post_ID` FROM " . $admin_blog_posts . " WHERE `post_ID` = '$rpl'";
+            $sql = "SELECT * FROM $admin_blog_posts WHERE `post_ID` = '$rpl' ORDER BY `post_ID` DESC LIMIT $message_limit, $number_messages";
+            $test_sql = "SELECT `post_ID` FROM $admin_blog_posts WHERE `post_ID` = '$rpl'";
          }
          // Normal SQL
          else {
             if ( $rpl == 0 ) {
-               $sql = "SELECT * FROM " . $admin_blog_posts . " WHERE `post_parent` = '0' ORDER BY `is_sticky` DESC, `post_ID` DESC LIMIT $message_limit, $number_messages";
-               $test_sql = "SELECT `post_ID` FROM " . $admin_blog_posts . " WHERE `post_parent` = '0'";  
+               $sql = "SELECT * FROM $admin_blog_posts WHERE `post_parent` = '0' ORDER BY `is_sticky` DESC, `post_ID` DESC LIMIT $message_limit, $number_messages";
+               $test_sql = "SELECT `post_ID` FROM $admin_blog_posts WHERE `post_parent` = '0'";  
             }
             else {
-               $sql = "SELECT * FROM " . $admin_blog_posts . " ORDER BY `is_sticky` DESC, `post_ID` DESC LIMIT $message_limit, $number_messages";
-               $test_sql = "SELECT `post_ID` FROM " . $admin_blog_posts . "";
+               $sql = "SELECT * FROM $admin_blog_posts ORDER BY `is_sticky` DESC, `post_ID` DESC LIMIT $message_limit, $number_messages";
+               $test_sql = "SELECT `post_ID` FROM $admin_blog_posts";
             }
          }
          // Find number of entries
@@ -398,7 +397,6 @@ function wpam_page() {
             echo '<tr><td>' . __('Sorry, no entries mached your criteria','wp_admin_blog') . '</td></tr>';
          }
          else {
-            // print menu
             echo '<tr>';
             echo '<td colspan="2" style="text-align:center;" class="tablenav"><div class="tablenav-pages" style="float:none;">' . wpam_page_menu($test, $number_messages, $curr_page, $message_limit, 'admin.php?page=wp-admin-microblog/wp-admin-microblog.php', 'search=' . $search . '&amp;author=' . $author . '&amp;tag=' . $tag . '') . '</div></td>';
             echo '</tr>';
@@ -410,11 +408,11 @@ function wpam_page() {
                       $where = $where . "`post_parent` = '" . $ids->post_ID . "' or";
                  }
                  $where = substr($where, 0, -3);
-                 $sql = "SELECT * FROM " . $admin_blog_posts . " WHERE " . $where . " ORDER BY `post_ID` ASC";
+                 $sql = "SELECT * FROM $admin_blog_posts WHERE $where ORDER BY `post_ID` ASC";
                  $replies = $wpdb->get_results($sql);
             }
             
-            
+            echo '';
             foreach ($post as $post) {
                $user_info = get_userdata($post->user);
                

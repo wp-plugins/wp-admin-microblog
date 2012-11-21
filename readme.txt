@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration
 Requires at least: 3.3
 Tested up to: 3.4.2
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 
 WP Admin Microblog adds a separate microblog in your WordPress backend.
 
@@ -54,8 +54,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 == Frequently Asked Questions ==
 
-= I updated the plugin and now I don't find the "as a blog post"-option. What's wrong? =
-With version 0.9.6 you can select in the options which user group can use this function. After the upgrade the function is not activated directly. So you must only reactive it.
 = How can I send a message as e-mail notification? =
 If you will send your message via e-mail to any user, so write @username (example: @admin).
 
@@ -63,6 +61,8 @@ If you will send your message via e-mail to any user, so write @username (exampl
 Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
 == Changelog ==
+= 2.2.3 - (21.11.2012) =
+* Bugfix: Change the send method for edits and replies from GET to POST
 = 2.2.2 - (25.10.2012) =
 * Bugfix: Fixed a incomplete call of wpam_message::add_message
 = 2.2.1 - (11.08.2012) =
