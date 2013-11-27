@@ -3,17 +3,17 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 2.2.3
+Version: 2.2.4
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.3
-Max WP Version: 3.4.2
+Max WP Version: 3.8
 */
 
 /*
    LICENCE
  
-    Copyright 2010-2012  Michael Winkler
+    Copyright 2010-2013  Michael Winkler
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ require_once('wp_admin_microblog_messages.php');
 function wpam_menu() {
    global $wpam_blog_name;
    global $wpam_admin_page;
-   $wpam_admin_page = add_menu_page(__('Blog','wp_admin_blog'), $wpam_blog_name,'use_wp_admin_microblog', __FILE__, 'wpam_page', WP_PLUGIN_URL . '/wp-admin-microblog/images/logo.png');
+   $wpam_admin_page = add_menu_page(__('Blog','wp_admin_blog'), $wpam_blog_name,'use_wp_admin_microblog', __FILE__, 'wpam_page', plugins_url() . '/wp-admin-microblog/images/logo.png');
    add_action("load-$wpam_admin_page", 'wpam_add_help_tab');
    add_submenu_page('wp-admin-microblog/wp-admin-microblog.php', __('Settings','wp_admin_blog'), __('Settings','wp_admin_blog'), 'administrator', 'wp-admin-microblog/settings.php', 'wpam_settings');
 }
@@ -360,7 +360,7 @@ function wpam_add_widgets() {
             $name = 'Microblog';
         }
         $str = "'";
-        $title = '<a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none; font-size:12px; font-weight:bold; color:#464646;" title="' . __('New Message','wp_admin_blog') . '">' . $name . ' <img src="' .  WP_PLUGIN_URL . '/wp-admin-microblog/images/document-new-6.png' . '" heigth="12" width="12" /></a>';
+        $title = '<a onclick="wpam_showhide(' . $str . 'wpam_new_message' . $str . ')" style="cursor:pointer; text-decoration:none; font-size:12px; font-weight:bold; color:#464646;" title="' . __('New Message','wp_admin_blog') . '">' . $name . ' <img src="' .  plugins_url() . '/wp-admin-microblog/images/document-new-6.png' . '" heigth="12" width="12" /></a>';
         wp_add_dashboard_widget('wpam_dashboard_widget', '' . $title . '', 'wpam_widget_function');
     }
 }
@@ -369,33 +369,33 @@ function wpam_add_widgets() {
  * Add scripts ans stylesheets
 */ 
 function wpam_header() {
-   // Define $page
-   if ( isset($_GET['page']) ) {
-           $page = $_GET['page'];
-   }
-   else {
-           $page = '';
-   }
-   // load scripts only, when it's wp_admin_blog page
-   if ( eregi('wp-admin-microblog', $page) || eregi('wp-admin/index.php', $_SERVER['PHP_SELF']) ) {
-      wp_register_script('wp_admin_blog', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.js');
-      wp_register_style('wp_admin_blog_css', WP_PLUGIN_URL . '/wp-admin-microblog/wp-admin-microblog.css');
-      wp_enqueue_style('wp_admin_blog_css');
-      wp_enqueue_script('wp_admin_blog');
-      wp_enqueue_script('media-upload');
-      add_thickbox();
-   }
-   // load the hack for the normal WP Admin Microblog page
-   if ( eregi('wp-admin-microblog', $page) ) {
-      wp_register_script('wpam_upload_hack', WP_PLUGIN_URL . '/wp-admin-microblog/media-upload-hack.js');
-      wp_enqueue_script('wpam_upload_hack');
-   }
-   // load the hack for the dashboard, when the user say yes
-   $test = get_option('wp_admin_blog_media_upload');
-   if (eregi('wp-admin/index.php', $_SERVER['REQUEST_URI']) && $test == 'true') {
-      wp_register_script('wpam_upload_hack', WP_PLUGIN_URL . '/wp-admin-microblog/media-upload-hack.js');
-      wp_enqueue_script('wpam_upload_hack');
-   }
+    // Define $page
+    if ( isset($_GET['page']) ) {
+        $page = $_GET['page'];
+    }
+    else {
+        $page = '';
+    }
+    // load scripts only, when it's wp_admin_blog page
+    if ( strpos($page, 'wp-admin-microblog') !== FALSE || strpos($_SERVER['PHP_SELF'], 'wp-admin/index.php') !== FALSE ) {
+        wp_register_script('wp_admin_blog', plugins_url() . '/wp-admin-microblog/wp-admin-microblog.js');
+        wp_register_style('wp_admin_blog_css', plugins_url() . '/wp-admin-microblog/wp-admin-microblog.css');
+        wp_enqueue_style('wp_admin_blog_css');
+        wp_enqueue_script('wp_admin_blog');
+        wp_enqueue_script('media-upload');
+        add_thickbox();
+    }
+    // load the hack for the normal WP Admin Microblog page
+    if ( strpos($page, 'wp-admin-microblog') !== FALSE ) {
+        wp_register_script('wpam_upload_hack', plugins_url() . '/wp-admin-microblog/media-upload-hack.js');
+        wp_enqueue_script('wpam_upload_hack');
+    }
+    // load the hack for the dashboard, when the user say yes
+    $test = get_option('wp_admin_blog_media_upload');
+    if (strpos($_SERVER['REQUEST_URI'], 'wp-admin/index.php') !== FALSE && $test == 'true') {
+        wp_register_script('wpam_upload_hack', plugins_url() . '/wp-admin-microblog/media-upload-hack.js');
+        wp_enqueue_script('wpam_upload_hack');
+    }
 }
 
 /**

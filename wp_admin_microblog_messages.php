@@ -11,7 +11,7 @@ class wpam_message {
     * @param $parent (INT) - ID of the parent message. Used if the new message is a reply (default: 0)
     * @param $is_sticky (INT) - 0(false) or 1(true)
     */
-    function add_message ($content, $user, $parent, $is_sticky) {
+    static function add_message ($content, $user, $parent, $is_sticky) {
         global $wpdb;
         global $admin_blog_posts;
         if ($content != '') {
@@ -40,7 +40,7 @@ class wpam_message {
         }
     }
 
-    private function send_notifications($text, $user) {
+    private static function send_notifications($text, $user) {
         global $wpdb;
         global $admin_blog_posts;
 
@@ -85,7 +85,7 @@ class wpam_message {
      * @param int $message_id
      * @param string $content 
      */
-    private function add_tags ($message_id, $content) {
+    private static function add_tags ($message_id, $content) {
         global $wpdb;
         global $admin_blog_tags;
         global $admin_blog_relations;
@@ -124,7 +124,7 @@ class wpam_message {
      * @param type $message_ID
      * @param type $content 
      */
-    private function del_tags($message_ID, $content) {
+    private static function del_tags($message_ID, $content) {
         global $wpdb;
         global $admin_blog_tags;
         global $admin_blog_relations;
@@ -149,7 +149,7 @@ class wpam_message {
     * @global string $admin_blog_relations
     * @param int $message_ID 
     */
-    function del_message($message_ID) {
+    static function del_message($message_ID) {
         global $wpdb;
         global $admin_blog_posts;
         global $admin_blog_relations;
@@ -162,7 +162,7 @@ class wpam_message {
     * @param int $message_ID
     * @param string $text
     */
-    function update_message($message_ID, $text) {
+    static function update_message($message_ID, $text) {
         global $wpdb;
         global $admin_blog_posts;
         $text = nl2br($text);
@@ -179,7 +179,7 @@ class wpam_message {
     * @param int $is_sticky - 0 or 1
     * @since version 1.2.0
     */
-    function update_sticky($message_ID, $is_sticky) {
+    static function update_sticky($message_ID, $is_sticky) {
         global $wpdb;
         global $admin_blog_posts;
         $wpdb->update($admin_blog_posts, array('is_sticky' => $is_sticky ), array('post_ID' => $message_ID), array('%d'), array('%d') );
@@ -191,7 +191,7 @@ class wpam_message {
     * @param string $title - the title of the message
     * @param int $author_id - the user id
     */
-    function add_as_wp_post ($content, $title, $author_id) {
+    static function add_as_wp_post ($content, $title, $author_id) {
         if ($title == '') {
             $title = __('Short message','wp_admin_blog');
         }
@@ -222,7 +222,7 @@ class wpam_message {
      * @param array $tags
      * @return string
      */
-    function prepare($text, $tags) {
+    static function prepare($text, $tags) {
         $text = wpam_message::replace_bbcode($text);
         $text = wpam_message::replace_url($text);
         $text = wpam_message::replace_tags($text, $tags);
@@ -236,7 +236,7 @@ class wpam_message {
      * @param string $mode (replace or delete)
      * @return string 
      */
-    private function replace_bbcode($text, $mode = 'replace') {
+    private static function replace_bbcode($text, $mode = 'replace') {
         if ($mode == 'replace') {
             $text = preg_replace("/\[b\](.*)\[\/b\]/Usi", "<strong>\\1</strong>", $text); 
             $text = preg_replace("/\[i\](.*)\[\/i\]/Usi", "<em>\\1</em>", $text); 
@@ -265,7 +265,7 @@ class wpam_message {
      * @param string $text
      * @return string
      */
-    private function replace_url($text) {
+    private static function replace_url($text) {
         // correct a problem when <br /> stands behind an url
         $text = str_replace("<br />"," <br />",$text);
         if ( preg_match_all("((http://|https://|ftp://|file://|mailto:|news:)[^ ]+)", $text, $match) ) {
@@ -295,7 +295,7 @@ class wpam_message {
      * @return string
      * @since version 2.1.0
      */
-    private function replace_tags ($text, $tags) {
+    private static function replace_tags ($text, $tags) {
         if ( preg_match_all("/[#]+[A-Za-z0-9-_]+/", $text, $match) ) {
             for ($x = 0; $x < count($match[0]); $x++) {
                 $name = str_replace('#', '', $match[0][$x]);

@@ -412,7 +412,6 @@ function wpam_page() {
                  $replies = $wpdb->get_results($sql);
             }
             
-            echo '';
             foreach ($post as $post) {
                $user_info = get_userdata($post->user);
                
