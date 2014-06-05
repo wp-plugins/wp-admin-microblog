@@ -1,11 +1,11 @@
 === WP Admin Microblog ===
 Contributors: Michael Winkler
-Tags: microblog, microblogging, admin, communication, collaboration
+Tags: microblog, microblogging, admin, communication, collaboration, scratchpad
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: 2.2.4
+Tested up to: 4.0
+Stable tag: 2.3
 
-WP Admin Microblog adds a separate microblog in your WordPress backend.
+Make the communication and collaboration in your team easier or use it as a scratchpad. Start your own little microblog directly in your WordPress backend.
 
 == Description ==
 
@@ -20,7 +20,7 @@ Use at your own risk. No warranty expressed or implied is provided.
 
 == Credits ==
 
-Copyright 2010-2013 by Michael Winkler
+Copyright 2010-2014 by Michael Winkler
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -61,6 +61,11 @@ If you will send your message via e-mail to any user, so write @username (exampl
 Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
 == Changelog ==
+= 2.3.0 - (06.06.2014) =
+* New: User specific screen options added (number of messages per page, number of tags, sort option)
+* New: New sort option for messages added
+* New: Automatic check for new messages added
+* Changed: UI modifications for better integration in WordPress 3.8+
 = 2.2.4 - (27.11.2013) =
 * This is a service release for supporting all current WordPress versions and PHP 5.4+
 = 2.2.3 - (21.11.2012) =

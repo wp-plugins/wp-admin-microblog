@@ -4,12 +4,13 @@
  * The wpam parsing class for messages
  */
 class wpam_message {
+    
     /** 
     * Add new message
-    * @param $content (STRING) - text of a message
-    * @param $user (INT) - WordPress user ID
-    * @param $parent (INT) - ID of the parent message. Used if the new message is a reply (default: 0)
-    * @param $is_sticky (INT) - 0(false) or 1(true)
+    * @param string $content    - text of a message
+    * @param int $user          - WordPress user ID
+    * @param int $parent        - ID of the parent message. Used if the new message is a reply (default: 0)
+    * @param int $is_sticky     - 0(false) or 1(true)
     */
     static function add_message ($content, $user, $parent, $is_sticky) {
         global $wpdb;
@@ -19,20 +20,26 @@ class wpam_message {
             $post_time = current_time('mysql',0);
             // check message duplications
             $duplicate = $wpdb->get_var("SELECT `text` FROM $admin_blog_posts WHERE `text` = '$content' AND `post_parent` = '$parent' AND `user` = '$user'");
-            if ( $duplicate != "" ) {
+            if ( $duplicate != '' ) {
                 if ( strlen($duplicate) == strlen($content) ) {
                     return false;
                 }
             }
             // insert message
             $wpdb->insert( $admin_blog_posts, array( 
-                'post_parent' => $parent, 
-                'text' => $content, 
-                'date' => $post_time, 
-                'user' => $user, 
+                'post_parent' => $parent,
+                'text' => $content,
+                'date' => $post_time,
+                'sort_date' => $post_time,
+                'last_edit' => $post_time,
+                'user' => $user,
                 'is_sticky' => $is_sticky ), 
-                array( '%s', '%s', '%s', '%s', '%s' ) );
+                array( '%d', '%s', '%s', '%s', '%s', '%d', '%d' ) );
             $new_message_id = $wpdb->insert_id;
+            // update sort_date for parent
+            if ( $parent != 0 ) {
+                $wpdb->update($admin_blog_posts, array('sort_date' => $post_time ), array('post_ID' => $parent), array('%s'), array('%d') );
+            }
             // add tags
             wpam_message::add_tags($new_message_id, $content);
             // send notifications
@@ -40,6 +47,11 @@ class wpam_message {
         }
     }
 
+    /**
+     * Send notifications
+     * @param string $text
+     * @param int $user
+     */
     private static function send_notifications($text, $user) {
         global $wpdb;
         global $admin_blog_posts;
@@ -80,8 +92,6 @@ class wpam_message {
     
     /**
      * Add tags
-     * @global class $wpdb
-     * @global string $admin_blog_tags
      * @param int $message_id
      * @param string $content 
      */
@@ -117,12 +127,8 @@ class wpam_message {
     
     /**
      * Delete tags if where are deleted in the message. Used for update_message
-     * @global class $wpdb
-     * @global string $admin_blog_tags
-     * @global string $admin_blog_relations
-     * @global string $admin_blog_posts
-     * @param type $message_ID
-     * @param type $content 
+     * @param int $message_ID
+     * @param string $content 
      */
     private static function del_tags($message_ID, $content) {
         global $wpdb;
@@ -144,9 +150,6 @@ class wpam_message {
     
     /**
     * Delete message
-    * @global class $wpdb
-    * @global string $admin_blog_posts
-    * @global string $admin_blog_relations
     * @param int $message_ID 
     */
     static function del_message($message_ID) {
@@ -166,15 +169,14 @@ class wpam_message {
         global $wpdb;
         global $admin_blog_posts;
         $text = nl2br($text);
-        $wpdb->update($admin_blog_posts, array('text' => $text ), array('post_ID' => $message_ID), array('%s'), array('%d') );
+        $post_time = current_time('mysql',0);
+        $wpdb->update($admin_blog_posts, array('text' => $text, 'last_edit' => $post_time ), array('post_ID' => $message_ID), array('%s','%s'), array('%d') );
         wpam_message::del_tags($message_ID, $text);
         wpam_message::add_tags($message_ID, $text);
     }
     
     /**
     * Remove sticky message and make it to a normal one
-    * @global class $wpdb
-    * @global string $admin_blog_posts
     * @param int $message_ID
     * @param int $is_sticky - 0 or 1
     * @since version 1.2.0
@@ -222,7 +224,7 @@ class wpam_message {
      * @param array $tags
      * @return string
      */
-    static function prepare($text, $tags) {
+    public static function prepare($text, $tags) {
         $text = wpam_message::replace_bbcode($text);
         $text = wpam_message::replace_url($text);
         $text = wpam_message::replace_tags($text, $tags);
@@ -279,7 +281,7 @@ class wpam_message {
                     $length = strlen($link_text);
                     $link_text = substr($link_text, 0 , 50);
                     if ($length > 50) {
-                        $link_text = $link_text . '[...]';
+                        $link_text .= '[...]';
                     }
                     $text = str_replace($match[0][$x], ' <a href="' . $match[0][$x] . '" target="_blank" title="' . $match[0][$x] . '">' . $link_text . '</a> ', $text);
                 }
