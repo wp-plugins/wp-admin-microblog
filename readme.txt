@@ -3,7 +3,7 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration, scratchpad
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 2.3
+Stable tag: 2.3.1
 
 Make the communication and collaboration in your team easier or use it as a scratchpad. Start your own little microblog directly in your WordPress backend.
 
