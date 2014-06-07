@@ -159,11 +159,15 @@ class wpam_message {
         global $wpdb;
         global $admin_blog_posts;
         global $admin_blog_relations;
+        $wpdb->query("SET AUTOCOMMIT=0");
+        $wpdb->query("START TRANSACTION");
         if ( $level === 2 ) {
             wpam_message::reset_sort_date($message_ID);
         }
-        $wpdb->query( "DELETE FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'" );
-        $wpdb->query( "DELETE FROM $admin_blog_relations WHERE `post_ID` = '$message_ID'" );
+        
+        $wpdb->query("DELETE FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'");
+        $wpdb->query("DELETE FROM $admin_blog_relations WHERE `post_ID` = '$message_ID'");
+        $wpdb->query("COMMIT");
     }
     
     /**
@@ -175,8 +179,6 @@ class wpam_message {
     private static function reset_sort_date($message_ID) {
         global $wpdb;
         global $admin_blog_posts;
-        $wpdb->query("SET AUTOCOMMIT=0");
-        $wpdb->query("START TRANSACTION");
         // Select parent_id
         $parent_id = intval( $wpdb->get_var("SELECT `post_parent` FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'") );
         if ( $parent_id === 0 ) {
