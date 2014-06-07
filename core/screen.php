@@ -17,9 +17,9 @@ function wpam_screen_options () {
 function wpam_show_screen_options( $status, $args ) {
     global $wpam_admin_page;
     // Load data
-    $tags_per_page = 50;
-    $messages_per_page = 10;
-    $sort_order = 'date';
+    $tags_per_page = WPAM_DEFAULT_TAGS;
+    $messages_per_page = WPAM_DEFAULT_NUMBER_MESSAGES;
+    $sort_order = WPAM_DEFAULT_SORT_ORDER;
     $user = get_current_user_id();
     $user_options = get_user_meta($user, 'wpam_screen_settings', true);
     if ( !empty($user_options) ) {
@@ -109,7 +109,6 @@ class wpam_screen {
      */
     public static function get_message ($post, $tags, $user_info, $options, $level = 1) {
         $edit_button = '';
-        $str = "'";
         $time = wpam_core::datesplit($post->date);
         $message_text = wpam_message::prepare( $post->text, $tags );
 
@@ -131,19 +130,19 @@ class wpam_screen {
 
         // Show message edit options if the user is the author of the message or the blog admin
         if ( $post->user == $options['user'] || current_user_can('manage_options') ) {
-            $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&delete=' . $post->post_ID . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
+            $edit_button = $edit_button . '<a onclick="javascript:wpam_editMessage(' . $post->post_ID . ')" style="cursor:pointer;" title="' . __('Edit this message','wp_admin_blog') . '">' . __('Edit','wp_admin_blog') . '</a> | ' . $sticky_option . '<a href="admin.php?page=wp-admin-microblog/wp-admin-microblog.php&amp;delete=' . $post->post_ID . '&amp;level=' . $level . '" title="' . __('Click to delete this message','wp_admin_blog') . '" style="color:#FF0000">' . __('Delete','wp_admin_blog') . '</a> | ';
         }
-        $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . $str . '' . $options['auto_reply'] . '' . $str . ',' . $str . '' . $user_info->user_login . '' . $str . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
+        $edit_button = $edit_button . '<a onclick="javascript:wpam_replyMessage(' . $post->post_ID . ',' . $post->post_parent . ',' . "'" . $options['auto_reply'] . "'" . ',' . "'" . $user_info->user_login . "'" . ')" style="cursor:pointer; color:#009900;" title="' . __('Write a reply','wp_admin_blog') . '">' . __('Reply','wp_admin_blog') . '</a>';
 
         // get human time difference
         $message_time = human_time_diff( mktime($time[0][3], $time[0][4], $time[0][5], $time[0][1], $time[0][2], $time[0][0] ), current_time('timestamp') ) . ' ' . __( 'ago', 'wp_admin_blog' );
 
         // handle date formats
         if ( __('en','wp_admin_blog') == 'de') {
-            $message_date = '' . $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0] . '';
+            $message_date = $time[0][2]. '.' . $time[0][1] . '.' . $time[0][0];
         }
         else {
-            $message_date = '' . $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2] . '';
+            $message_date = $time[0][0]. '-' . $time[0][1] . '-' . $time[0][2];
         }
         if ( date('d.m.Y') == $message_date || date('Y-m-d') == $message_date ) {
             $message_date = __('Today','wp_admin_blog');
@@ -272,6 +271,7 @@ function wpam_page() {
     $edit_message_ID = isset( $_POST['wp_admin_blog_message_ID'] ) ? intval($_POST['wp_admin_blog_message_ID']) : 0;
     $parent_ID = isset( $_POST['wp_admin_blog_parent_ID'] ) ? intval($_POST['wp_admin_blog_parent_ID']) : 0;
     $delete = isset( $_GET['delete'] ) ? intval($_GET['delete']) : 0;
+    $level= isset( $_GET['level'] ) ? intval($_GET['level']) : 0;
     $remove = isset( $_GET['remove'] ) ? intval($_GET['remove']) : 0;
     $add = isset( $_GET['add'] ) ? intval($_GET['add']) : 0;
 
@@ -285,15 +285,16 @@ function wpam_page() {
     $auto_reply = false;
     $auto_reload_interval = 60000;
     $blog_name = 'Microblog';
-    $tags_per_page = 50;
-    $number_messages = 10;
-    $sort_order = 'date';
+    $tags_per_page = WPAM_DEFAULT_TAGS;
+    $number_messages = WPAM_DEFAULT_NUMBER_MESSAGES;
+    $sort_order = WPAM_DEFAULT_SORT_ORDER;
 
     $system = wpam_get_options('','system');
     foreach ($system as $system) {
         if ( $system['variable'] == 'auto_reply' ) { $auto_reply = $system['value']; }
         if ( $system['variable'] == 'blog_name' ) { $blog_name = $system['value']; }
         if ( $system['variable'] == 'auto_reload_interval' ) { $auto_reload_interval = $system['value']; }
+        if ( $system['variable'] == 'auto_reload_enabled' ) { $auto_reload_enabled = $system['value']; }
     }
    
     // Load user settings
@@ -332,7 +333,7 @@ function wpam_page() {
        $content = "";
     }	
     if ( $delete != 0 ) {
-       wpam_message::del_message($delete);
+       wpam_message::del_message($delete, $level);
     }
     if ( $remove != 0 ) {
        wpam_message::update_sticky($remove, 0);  
@@ -612,7 +613,8 @@ function wpam_page() {
     </thead>
     </table>
     </form>
-     <script type="text/javascript" charset="utf-8" id="wpam_auto_reload_interval">
+    <?php if ( $auto_reload_enabled == 'true' ) { ?>
+    <script type="text/javascript" charset="utf-8" id="wpam_auto_reload_interval">
         jQuery(document).ready(function($) {
             $.ajaxSetup({ cache: false });
             setInterval(function() {
@@ -630,6 +632,7 @@ function wpam_page() {
             }, <?php echo $auto_reload_interval; ?>);
         });
     </script>
+    <?php } ?>
     </div>
     </div>
     <?php

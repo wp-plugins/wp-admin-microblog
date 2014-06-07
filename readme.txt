@@ -3,9 +3,9 @@ Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration, scratchpad
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 
-Make the communication and collaboration in your team easier. Start your own little microblog directly in your WordPress backend.
+Make the communication and collaboration in your team easier or use it as a scratchpad.
 
 == Description ==
 
@@ -60,7 +60,14 @@ If you will send your message via e-mail to any user, so write @username (exampl
 = How can I add tags to a message? =
 Since version 2.1 you can add tags directly as hashtags. Examples: #2012, #Microblog
 
+= How can I overwrite default settings like the number of messages per page? = 
+The default settings WPAM_DEFAULT_TAGS, WPAM_DEFAULT_NUMBER_MESSAGES and WPAM_DEFAULT_SORT_ORDER can be overwritten if you define this parameters for example in your wp-config.php.
 == Changelog ==
+= 2.3.2 - (07.06.2014) =
+* New: Automatic check for new messages can be disabled
+* Changed: If a comment is deleted, the sort date of the message is reseted.
+* Changed: Default database engine is now INNODB
+* Changed: Some default settings can now be overwritten (number of messages per page, number of tags, sort option)
 = 2.3.0 - (06.06.2014) =
 * New: User specific screen options added (number of messages per page, number of tags, sort option)
 * New: New sort option for messages added

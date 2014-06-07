@@ -110,6 +110,9 @@ class wpam_update {
     private static function update_to_23 () {
         global $wpdb;
         global $admin_blog_posts;
+        global $admin_blog_meta;
+        global $admin_blog_relations;
+        global $admin_blog_tags;
         // add column sort_date
         if ($wpdb->query("SHOW COLUMNS FROM " . $admin_blog_posts . " LIKE 'sort_date'") == '0') { 
             $wpdb->query("ALTER TABLE " . $admin_blog_posts . " ADD `sort_date` DATETIME NULL DEFAULT NULL AFTER `date`");
@@ -121,6 +124,13 @@ class wpam_update {
         if ( wpam_get_options('auto_reload_interval') === false ) {
             $wpdb->query("INSERT INTO " . $wpdb->prefix . "admin_blog_meta (`variable`, `value`, `category`) VALUES ('auto_reload_interval', '60000', 'system')");
         }
+        if ( wpam_get_options('auto_reload_enabled') === false ) {
+            $wpdb->query("INSERT INTO " . $wpdb->prefix . "admin_blog_meta (`variable`, `value`, `category`) VALUES ('auto_reload_enabled', 'true', 'system')");
+        }
+        $wpdb->query("ALTER TABLE " . $admin_blog_posts . " ENGINE = INNODB");
+        $wpdb->query("ALTER TABLE " . $admin_blog_meta . " ENGINE = INNODB");
+        $wpdb->query("ALTER TABLE " . $admin_blog_relations . " ENGINE = INNODB");
+        $wpdb->query("ALTER TABLE " . $admin_blog_tags . " ENGINE = INNODB");
     }
     
 }

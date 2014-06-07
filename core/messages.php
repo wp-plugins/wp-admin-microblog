@@ -149,15 +149,49 @@ class wpam_message {
     }
     
     /**
-    * Delete message
-    * @param int $message_ID 
+     * Delete message
+     * @param int $message_ID
+     * @param int $level
+     * @version 2
+     * @since 2.3
     */
-    static function del_message($message_ID) {
+    public static function del_message($message_ID, $level) {
         global $wpdb;
         global $admin_blog_posts;
         global $admin_blog_relations;
+        if ( $level === 2 ) {
+            wpam_message::reset_sort_date($message_ID);
+        }
         $wpdb->query( "DELETE FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'" );
         $wpdb->query( "DELETE FROM $admin_blog_relations WHERE `post_ID` = '$message_ID'" );
+    }
+    
+    /**
+     * This function resets the sort_date of a parent message
+     * @param type $message_ID
+     * return boolean
+     * @since 2.3.2
+     */
+    private static function reset_sort_date($message_ID) {
+        global $wpdb;
+        global $admin_blog_posts;
+        $wpdb->query("SET AUTOCOMMIT=0");
+        $wpdb->query("START TRANSACTION");
+        // Select parent_id
+        $parent_id = intval( $wpdb->get_var("SELECT `post_parent` FROM $admin_blog_posts WHERE `post_ID` = '$message_ID'") );
+        if ( $parent_id === 0 ) {
+            $wpdb->query("ROLLBACK");
+            return false;
+        }
+        // load date from latest child or use original post date
+        $date = $wpdb->get_var("SELECT `date` FROM $admin_blog_posts WHERE `post_parent` = '$parent_id' AND `post_ID` != '$message_ID' ORDER BY `post_ID` DESC LIMIT 0,1");
+        if ( $date == '' ) {
+            $date = $wpdb->get_var("SELECT `date` FROM $admin_blog_posts WHERE `post_ID` = '$parent_id'");
+        }
+        // update sort_date
+        $wpdb->update($admin_blog_posts, array('sort_date' => $date ), array('post_ID' => $parent_id), array('%s'), array('%d') );
+        $wpdb->query("COMMIT");
+        return true;
     }
     
     /** 

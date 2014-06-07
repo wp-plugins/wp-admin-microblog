@@ -59,6 +59,8 @@ function wpam_update_options ($option, $roles, $blog_post, $sticky) {
    $wpdb->query( $update );
    $update = "UPDATE " . $admin_blog_meta . " SET `value` = '" . $option['auto_reload_interval'] . "' WHERE `variable` = 'auto_reload_interval'";
    $wpdb->query( $update );
+   $update = "UPDATE " . $admin_blog_meta . " SET `value` = '" . $option['auto_reload_enabled'] . "' WHERE `variable` = 'auto_reload_enabled'";
+   $wpdb->query( $update );
    $update = "UPDATE " . $admin_blog_meta . " SET `value` = '" . $option['media_upload'] . "' WHERE `variable` = 'media_upload'";
    $wpdb->query( $update );
    $update = "UPDATE " . $admin_blog_meta . " SET `value` = '" . $option['sticky_for_dash'] . "' WHERE `variable` = 'sticky_for_dash'";
@@ -78,6 +80,7 @@ function wpam_settings () {
           $option = array(
             'auto_reply' => htmlspecialchars($_POST['auto_reply']),
             'auto_reload_interval' => htmlspecialchars($_POST['auto_reload_interval']),
+            'auto_reload_enabled' => ( isset( $_POST['auto_reload_enabled'] ) == 'true' ) ? 'true' : 'false',
             'media_upload' => htmlspecialchars($_POST['media_upload']),
             'name_blog' => htmlspecialchars($_POST['name_blog']),
             'name_widget' => htmlspecialchars($_POST['name_widget']),
@@ -94,6 +97,7 @@ function wpam_settings () {
      // load system settings
      $auto_reply = false;
      $auto_reload_interval = 60000;
+     $auto_reload_enabled = true;
      $name_blog = 'Microblog';
      $name_widget = 'Microblog';
      $media_upload = false;
@@ -104,6 +108,7 @@ function wpam_settings () {
      foreach ($system as $system) {
         if ( $system['variable'] == 'auto_reply' ) { $auto_reply = $system['value']; }
         if ( $system['variable'] == 'auto_reload_interval' ) { $auto_reload_interval = $system['value']; }
+        if ( $system['variable'] == 'auto_reload_enabled' ) { $auto_reload_enabled = $system['value']; }
         if ( $system['variable'] == 'blog_name' ) { $name_blog = $system['value']; }
         if ( $system['variable'] == 'blog_name_widget' ) { $name_widget = $system['value']; }
         if ( $system['variable'] == 'media_upload' ) { $media_upload = $system['value']; }
@@ -144,9 +149,15 @@ function wpam_settings () {
              <td><em><?php _e('Activate this option to use the media upload for the WP Admin Microblog dashboard widget. If you use it, please notify, that the media upload will not work correctly for QuickPress.','wp_admin_blog'); ?></em></td>
          </tr>
          <tr>
-             <th scope="row"><?php _e('Auto reload interval','wp_admin_blog'); ?></th>
+             <th scope="row"><?php _e('Auto check interval','wp_admin_blog'); ?></th>
              <td><input name="auto_reload_interval" type="text" value="<?php echo $auto_reload_interval; ?>" size="35" /></td>
              <td><em><?php _e('Use this option to modify the interval in which the plugin checks for new messages. A smaller value needs more server performance. The default value is 60000 ms.','wp_admin_blog'); ?></em></td>
+        </tr>
+        <tr>
+             <th scope="row"></th>
+             <?php $checked = ( $auto_reload_enabled == 'true' ) ? 'checked="checked"' : '';?>
+             <td><input name="auto_reload_enabled" id="auto_reload_enabled" type="checkbox" value="true" <?php echo $checked;?> /><label for="auto_reload_enabled"><?php _e('Enable auto check','wp_admin_blog'); ?></label></td>
+             <td></td>
         </tr>
      </table>
      <h3><?php _e('Access','wp_admin_blog'); ?></h3>
