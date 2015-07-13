@@ -3,17 +3,17 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 2.3.3
+Version: 2.3.4
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.3
-Max WP Version: 4.0
+Max WP Version: 4.2.2
 */
 
 /*
    LICENCE
  
-    Copyright 2010-2014  Michael Winkler
+    Copyright 2010-2015  Michael Winkler
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ function wpam_menu() {
  * @since 2.3
 */
 function wpam_get_version() {
-    return '2.3.3';
+    return '2.3.4';
 }
 
 /** 
@@ -194,12 +194,10 @@ function wpam_add_widgets() {
  * Add scripts ans stylesheets
 */ 
 function wpam_header() {
+    $page = '';
     // Define $page
     if ( isset($_GET['page']) ) {
         $page = $_GET['page'];
-    }
-    else {
-        $page = '';
     }
     // load scripts only, when it's wp_admin_blog page
     if ( strpos($page, 'wp-admin-microblog') !== FALSE || strpos($_SERVER['PHP_SELF'], 'wp-admin/index.php') !== FALSE ) {
@@ -368,4 +366,3 @@ add_action('init', 'wpam_language_support');
 add_action('admin_init','wpam_header');
 add_action('admin_menu','wpam_menu');
 add_action('wp_dashboard_setup','wpam_add_widgets');
-?>

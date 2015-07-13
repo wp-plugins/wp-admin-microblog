@@ -448,7 +448,7 @@ function wpam_page() {
     </form>
     <p style="margin:7px; font-size:2px;">&nbsp;</p>
     <form name="all_messages" method="post">
-    <table class="widefat">
+    <table class="widefat wpam-messages">
     <thead>
         <tr id="wpam_table_messages_headline">
             <th colspan="2">
