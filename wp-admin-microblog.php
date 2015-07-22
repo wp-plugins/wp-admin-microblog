@@ -3,11 +3,11 @@
 Plugin Name: WP Admin Microblog
 Plugin URI: http://mtrv.wordpress.com/microblog/
 Description: Adds a microblog in your WordPress backend.
-Version: 2.3.4
+Version: 2.3.5
 Author: Michael Winkler
 Author URI: http://mtrv.wordpress.com/
 Min WP Version: 3.3
-Max WP Version: 4.2.2
+Max WP Version: 4.3
 */
 
 /*
@@ -44,13 +44,35 @@ $admin_blog_tags = $wpdb->prefix . 'admin_blog_tags';
 $admin_blog_relations = $wpdb->prefix . 'admin_blog_relations';
 $admin_blog_meta = $wpdb->prefix . 'admin_blog_meta';
 
-// Define overwriteable system defaults
+/*
+ *  Define overwritable system defaults
+ */
+
+// Number of tags
 if ( !defined('WPAM_DEFAULT_TAGS') ) {
     define('WPAM_DEFAULT_TAGS', 50); }
+    
+// Number of messages
 if ( !defined('WPAM_DEFAULT_NUMBER_MESSAGES') ) {
     define('WPAM_DEFAULT_NUMBER_MESSAGES', 10); }
+    
+/* 
+ * Default sort order for messages
+ * Possible Values:
+ * - date
+ * - date_last_comment
+ */
 if ( !defined('WPAM_DEFAULT_SORT_ORDER') ) {
     define('WPAM_DEFAULT_SORT_ORDER', 'date'); }
+    
+/*
+ * Date format for messages
+ * Possible Values
+ * - time_difference
+ * - date
+ */
+if ( !defined('WPAM_DEFAULT_DATE_FORMAT') ) {
+    define('WPAM_DEFAULT_DATE_FORMAT', 'time_difference'); }    
 
 // load microblog name
 $wpam_blog_name = get_option('wp_admin_blog_name');
@@ -82,7 +104,7 @@ function wpam_menu() {
  * @since 2.3
 */
 function wpam_get_version() {
-    return '2.3.4';
+    return '2.3.5';
 }
 
 /** 

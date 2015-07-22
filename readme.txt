@@ -2,8 +2,8 @@
 Contributors: Michael Winkler
 Tags: microblog, microblogging, admin, communication, collaboration, scratchpad
 Requires at least: 3.3
-Tested up to: 4.2.2
-Stable tag: 2.3.4
+Tested up to: 4.3
+Stable tag: 2.3.5
 
 Make the communication and collaboration in your team easier or use it as a scratchpad.
 
@@ -14,6 +14,7 @@ WP Admin Microblog adds a separate microblog in your WordPress backend. The plug
 = Supported Languages =
 * English 
 * German
+* Turkish
 
 = Further information = 
 * [Developer blog](https://mtrv.wordpress.com/microblog/) 
@@ -72,6 +73,10 @@ You can use the following BBCodes for text formatting:
 [b]bold[/b], [i]italic[/i], [u]underline[/u], [s]strikethrough[/s], [red]red[/red], [blue]blue[/blue], [green]green[/green], [orange]orange[/orange], [sup]superscript[/sup], [sub]subscript[sub]. Combinations like [red][s]text[/s][/red] are possible.
 
 == Changelog ==
+
+= 2.3.5 - (22.07.2015) =
+* New: New screen option for date format
+* New: Turkish translation added (Thanks to EuroNur | Yeni Asya Team)
 
 = 2.3.4 - (13.07.2015) =
 * New: Support for the following BBCodes added [sub], [sup]
